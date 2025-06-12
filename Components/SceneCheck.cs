@@ -27,7 +27,7 @@ public static class SceneCheck
     /// <summary>
     /// Enumerated version of the Ultrakill scene types
     /// </summary>
-    public enum LevelType { Intro, MainMenu, Tutorial, Level, Credits, Sandbox, CyberGrind, Secret, PrimeSanctum, Encore, Custom, Unknown }
+    public enum LevelType { Bootstrap, Intro, MainMenu, Tutorial, Level, Credits, Sandbox, CyberGrind, Secret, PrimeSanctum, Encore, Custom, Unknown }
     /// <summary>
     /// Returns the current level type
     /// </summary>
@@ -43,12 +43,12 @@ public static class SceneCheck
     /// <summary>
     /// Invoked whenever the current level type is changed.
     /// </summary>
-    public static OnLevelChangedHandler OnLevelTypeChanged;
+    public static OnLevelChangedHandler OnSceneTypeChanged;
 
     /// <summary>
     /// Invoked whenever the scene is changed.
     /// </summary>
-    public static OnLevelChangedHandler OnLevelChanged;
+    public static OnLevelChangedHandler OnSceneChanged;
 
 
     private static void OnSceneLoad(Scene scene, LoadSceneMode loadSceneMode)
@@ -62,11 +62,11 @@ public static class SceneCheck
         {
             CurrentLevelType = newScene;
             CurrentSceneName = SceneHelper.CurrentScene;
-            OnLevelTypeChanged?.Invoke(newScene);
+            OnSceneTypeChanged?.Invoke(newScene);
         }
 
 
-        OnLevelChanged?.Invoke(CurrentLevelType);
+        OnSceneChanged?.Invoke(CurrentLevelType);
     }
     
     public static LevelType GetLevelType(string sceneName)
@@ -78,6 +78,7 @@ public static class SceneCheck
 
         return sceneName switch
         {
+            "Bootstrap" => LevelType.Bootstrap,
             "Intro" => LevelType.Intro,
             "Main Menu" => LevelType.MainMenu,
             "Tutorial" => LevelType.Tutorial,

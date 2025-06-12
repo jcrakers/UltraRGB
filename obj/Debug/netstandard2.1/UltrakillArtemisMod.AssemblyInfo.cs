@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Allows ULTRAKILL to send info to Artemis")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aab69334526d1e47c57bc5423b07c96a69f493e5")]
 [assembly: System.Reflection.AssemblyProductAttribute("Ultrakill Artemis Mod")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UltrakillArtemisMod")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
