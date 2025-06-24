@@ -11,9 +11,6 @@ D:\Users\John\Documents\Projects\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\
 D:\Users\John\Documents\Projects\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\Ultrakil.1EDE6BB2.Up2Date
 D:\Users\John\Documents\Projects\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltrakillArtemisMod.dll
 D:\Users\John\Documents\Projects\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltrakillArtemisMod.pdb
-D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\UltrakillArtemisMod.deps.json
-D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\UltrakillArtemisMod.dll
-D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\UltrakillArtemisMod.pdb
 D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\Assembly-CSharp.dll
 D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltrakillArtemisMod.csproj.AssemblyReference.cache
 D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\MyPluginInfo.cs
@@ -22,5 +19,8 @@ D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\n
 D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltrakillArtemisMod.AssemblyInfo.cs
 D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltrakillArtemisMod.csproj.CoreCompileInputs.cache
 D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\Ultrakil.1EDE6BB2.Up2Date
-D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltrakillArtemisMod.dll
-D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltrakillArtemisMod.pdb
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\UltraRGB.deps.json
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\UltraRGB.dll
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\UltraRGB.pdb
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.dll
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.pdb

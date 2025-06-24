@@ -8,7 +8,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\Ultrakill Artemis Mod\\UltrakillArtemisMod.csproj",
-        "projectName": "UltrakillArtemisMod",
+        "projectName": "UltraRGB",
         "projectPath": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\Ultrakill Artemis Mod\\UltrakillArtemisMod.csproj",
         "packagesPath": "C:\\Users\\john\\.nuget\\packages\\",
         "outputPath": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\Ultrakill Artemis Mod\\obj\\",
@@ -60,6 +60,10 @@
               "target": "Package",
               "version": "[2.*, )"
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
             "UnityEngine.Modules": {
               "include": "Compile",
               "target": "Package",
@@ -82,7 +86,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301\\RuntimeIdentifierGraph.json"
         }
       }
     }

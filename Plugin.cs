@@ -6,6 +6,8 @@ using UnityEngine;
 using UltrakillArtemisMod.Components;
 using System.IO;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
+
 
 namespace UltrakillArtemisMod;
 
@@ -16,7 +18,6 @@ public class ArtemisSupport : BaseUnityPlugin
     private static readonly HttpClient client = new HttpClient();
 
     public static string url = "";
-    //url needs to be a valid urI
 
     private string GetArtemisPort()
     {
@@ -48,29 +49,61 @@ public class ArtemisSupport : BaseUnityPlugin
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
 
-    public static float seconds;
-
     private void Update()
     {
-        seconds = StatsManager.Instance.seconds;
-        if (Input.GetKey(KeyCode.F1))
+        if (StatsManager.Instance.levelStarted && StatsManager.Instance != null)
         {
-            Logger.LogInfo($"Seconds: {seconds}");
+            var json = new
+            {
+                Time = StatsManager.Instance.seconds,
+                Kills = StatsManager.Instance.kills,
+                Style = StatsManager.Instance.stylePoints
+            };
+            var content = new StringContent(JsonConvert.SerializeObject(json), System.Text.Encoding.UTF8, "application/json");
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            //Logger.LogInfo($"Stats: {content.ReadAsStringAsync().Result}");
+            client.PostAsync(url + "RunStats", content);
+            //ResponseAsync(content);
         }
     }
 
+    /*private async Task ResponseAsync(StringContent content)
+    {
+        var response = await client.PostAsync(url + "RunStats", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var responseData = await response.Content.ReadAsStringAsync();
+            Logger.LogInfo($"Artemis response: {responseData}");
+        }
+        else
+        {
+            Logger.LogError($"Error: {response.StatusCode}");
+        }
+    }*/
+
     private void OnSceneChanged(SceneCheck.LevelType levelType)
     {
-        Logger.LogInfo($"Level changed to {SceneCheck.CurrentSceneName}");
-        
+        //Logger.LogInfo($"Level changed to {SceneCheck.CurrentSceneName}");
+
         var content = new StringContent(SceneCheck.CurrentSceneName);
         content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
         client.PostAsync(url + "CurrentSceneName", content);
+
+        var json = new
+        {
+            Seconds = 0,
+            Kills = 0,
+            Style = 0
+        };
+        var statsReset = new StringContent(JsonUtility.ToJson(json));
+        statsReset.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        client.PostAsync(url + "RunStats", statsReset);
     }
 
     private void OnSceneTypeChanged(SceneCheck.LevelType levelType)
     {
-        Logger.LogInfo($"Level type changed to {levelType}");
+        //Logger.LogInfo($"Level type changed to {levelType}");
 
         var content = new StringContent(levelType.ToString());
         content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
