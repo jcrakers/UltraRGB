@@ -41,10 +41,12 @@ public class ArtemisSupport : BaseUnityPlugin
         Logger = base.Logger;
 
         url = GetArtemisPort();
-        
+
         SceneCheck.Init();
         SceneCheck.OnSceneChanged += OnSceneChanged;
         SceneCheck.OnSceneTypeChanged += OnSceneTypeChanged;
+
+        StatsManager.checkpointRestart += OnCheckpointRestart;
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
@@ -90,15 +92,29 @@ public class ArtemisSupport : BaseUnityPlugin
         content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
         client.PostAsync(url + "CurrentSceneName", content);
 
+
+        var difficulty = MonoSingleton<PrefsManager>.Instance.GetInt("difficulty");
+        var difficultyName = difficulty switch
+        {
+            0 => "Harmless",
+            1 => "Lenient",
+            2 => "Standard",
+            3 => "Violent",
+            4 => "Brutal",
+            5 => "UMD",
+            _ => "Unknown"
+        };
+    
         var json = new
         {
-            Seconds = 0,
-            Kills = 0,
-            Style = 0
+            Difficulty = difficulty,
+            DifficultyName = difficultyName
         };
-        var statsReset = new StringContent(JsonUtility.ToJson(json));
-        statsReset.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        client.PostAsync(url + "RunStats", statsReset);
+        var difficultyContent = new StringContent(JsonConvert.SerializeObject(json), System.Text.Encoding.UTF8, "application/json");
+        difficultyContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        client.PostAsync(url + "Difficulty", difficultyContent);
+
+        client.PostAsync(url + "RunStatsReset", content);
     }
 
     private void OnSceneTypeChanged(SceneCheck.LevelType levelType)
@@ -108,5 +124,13 @@ public class ArtemisSupport : BaseUnityPlugin
         var content = new StringContent(levelType.ToString());
         content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
         client.PostAsync(url + "CurrentSceneType", content);
+    }
+    
+    private void OnCheckpointRestart()
+    {
+        Logger.LogInfo($"{StatsManager.Instance.tookDamage}");
+        var content = new StringContent(StatsManager.Instance.restarts.ToString());
+        content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
+        client.PostAsync(url + "Restarts", content);
     }
 }
