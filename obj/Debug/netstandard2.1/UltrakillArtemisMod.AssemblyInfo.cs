@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Allows ULTRAKILL to send info to Artemis")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e15e063f93885df067d9933fb0e13e036ebda493")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+62f8fba0f8df770a1867745c3ca6b8b481592f3f")]
 [assembly: System.Reflection.AssemblyProductAttribute("UltraRGB")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UltraRGB")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
