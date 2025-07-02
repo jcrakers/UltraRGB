@@ -10,37 +10,47 @@ public class OtherCheck : MonoBehaviour
         if (!initialized)
         {
             initialized = true;
-            GameObject gameObject = new GameObject("OtherCheck");
-            OtherCheck otherCheck = gameObject.AddComponent<OtherCheck>();
-            gameObject.hideFlags = HideFlags.HideAndDontSave;
+            GameObject otherGameObject = new GameObject("OtherCheck");
+            OtherCheck otherCheck = otherGameObject.AddComponent<OtherCheck>();
+            otherGameObject.hideFlags = HideFlags.HideAndDontSave;
             otherCheck.enabled = true;
-            DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(otherGameObject);
         }
     }
-    public delegate void DeathPauseHandler(bool state);
-    public static DeathPauseHandler OnDeath;
-    public static DeathPauseHandler OnPause;
-    public static bool oldPaused = false;
-    public static bool oldDead = false;
+    public delegate void DeathPauseCheatHandler(bool state);
+    public static DeathPauseCheatHandler OnDeath;
+    public static DeathPauseCheatHandler OnPause;
+    public static DeathPauseCheatHandler OnCheatsEnabled;
+    private static bool oldPaused = false;
+    private static bool oldDead = false;
+    private static bool oldCheatsEnabled = false;
 
     void Update()
     {
         if (MonoSingleton<OptionsManager>.Instance != null)
         {
-
             if (oldPaused != OptionsManager.Instance.paused)
             {
                 oldPaused = OptionsManager.Instance.paused;
                 OnPause?.Invoke(OptionsManager.Instance.paused);
             }
         }
-        
+
         if (MonoSingleton<NewMovement>.Instance != null)
         {
             if (oldDead != MonoSingleton<NewMovement>.Instance.dead)
             {
                 oldDead = MonoSingleton<NewMovement>.Instance.dead;
                 OnDeath?.Invoke(MonoSingleton<NewMovement>.Instance.dead);
+            }
+        }
+
+        if (CheatsController.Instance != null)
+        {
+            if (oldCheatsEnabled != CheatsController.Instance.cheatsEnabled)
+            {
+                oldCheatsEnabled = CheatsController.Instance.cheatsEnabled;
+                OnCheatsEnabled?.Invoke(CheatsController.Instance.cheatsEnabled);
             }
         }
     }

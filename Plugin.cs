@@ -8,6 +8,7 @@ using System.IO;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System;
 
 
 namespace UltrakillArtemisMod;
@@ -60,10 +61,15 @@ public class ArtemisSupport : BaseUnityPlugin
         SceneCheck.OnSceneTypeChanged += OnSceneTypeChanged;
 
         StatsManager.checkpointRestart += OnCheckpointRestart;
-        
+
         OtherCheck.Init();
         OtherCheck.OnPause += OnPause;
         OtherCheck.OnDeath += OnDeath;
+        OtherCheck.OnCheatsEnabled += OnCheatsEnabled;
+
+        RunCheck.Init();
+        RunCheck.OnRunCompleted += OnRunCompleted;
+        RunCheck.OnChallenge += OnChallenge;
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
@@ -72,11 +78,7 @@ public class ArtemisSupport : BaseUnityPlugin
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            Logger.LogInfo($"Stats: {StatsManager.Instance.tookDamage} took damage.");
-            for (int i = 0; i < StatsManager.Instance.timeRanks.Length; i++)
-            {
-                Logger.LogInfo($"Stats: {StatsManager.Instance.timeRanks[i]} time ranks.");
-            }
+            Logger.LogInfo($"Challenge done: {ChallengeManager.Instance.challengeDone}");
         }
 
         if (StatsManager.Instance != null)
@@ -86,13 +88,74 @@ public class ArtemisSupport : BaseUnityPlugin
                 var statsJson = new
                 {
                     Time = StatsManager.Instance.seconds,
+                    TimeRank = getRank(0),
                     Kills = StatsManager.Instance.kills,
-                    Style = StatsManager.Instance.stylePoints
+                    KillRank = getRank(1),
+                    Style = StatsManager.Instance.stylePoints,
+                    StyleRank = getRank(2)
                 };
                 PostArtemis("RunStats", statsJson);
                 //ResponseAsync(content);
             }
+
+            if (StatsManager.Instance.endlessMode && !OptionsManager.Instance.paused)
+            {
+                var statsJson = new
+                {
+                    Time = StatsManager.Instance.seconds,
+                    Wave = EndlessGrid.Instance.currentWave,
+                    EnemysLeft = EnemyTracker.Instance.GetCurrentEnemies().Count
+                };
+                PostArtemis("CyberGrindStats", statsJson);
+                //ResponseAsync(content);
+            }
         }
+
+    }
+
+    string getRank(int type)
+    {
+        var ranks = new List<string> { "D", "C", "B", "A", "S" };
+        if (type == 0)
+        {
+            if (StatsManager.Instance.seconds >= StatsManager.Instance.timeRanks[0])
+                return ranks[0];
+            else if (StatsManager.Instance.seconds >= StatsManager.Instance.timeRanks[1])
+                return ranks[1];
+            else if (StatsManager.Instance.seconds >= StatsManager.Instance.timeRanks[2])
+                return ranks[2];
+            else if (StatsManager.Instance.seconds >= StatsManager.Instance.timeRanks[3])
+                return ranks[3];
+            else
+                return ranks[4];
+        }
+        if (type == 1)
+        {
+            if (StatsManager.Instance.kills < StatsManager.Instance.killRanks[0])
+                return ranks[0];
+            else if (StatsManager.Instance.kills < StatsManager.Instance.killRanks[1])
+                return ranks[1];
+            else if (StatsManager.Instance.kills < StatsManager.Instance.killRanks[2])
+                return ranks[2];
+            else if (StatsManager.Instance.kills < StatsManager.Instance.killRanks[3])
+                return ranks[3];
+            else
+                return ranks[4];
+        }
+        if (type == 2)
+        {
+            if (StatsManager.Instance.stylePoints < StatsManager.Instance.styleRanks[0])
+                return ranks[0];
+            else if (StatsManager.Instance.stylePoints < StatsManager.Instance.styleRanks[1])
+                return ranks[1];
+            else if (StatsManager.Instance.stylePoints < StatsManager.Instance.styleRanks[2])
+                return ranks[2];
+            else if (StatsManager.Instance.stylePoints < StatsManager.Instance.styleRanks[3])
+                return ranks[3];
+            else
+                return ranks[4];
+        }
+        return "Unknown";
     }
 
     /*private async Task ResponseAsync(StringContent content)
@@ -114,10 +177,7 @@ public class ArtemisSupport : BaseUnityPlugin
     {
         //Logger.LogInfo($"Level changed to {SceneCheck.CurrentSceneName}");
 
-        var content = new StringContent(SceneCheck.CurrentSceneName);
-        content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
-        client.PostAsync(url + "CurrentSceneName", content);
-
+        PostArtemis("CurrentSceneName", SceneCheck.CurrentSceneName);
 
         var difficulty = MonoSingleton<PrefsManager>.Instance.GetInt("difficulty");
         var difficultyName = difficulty switch
@@ -138,30 +198,48 @@ public class ArtemisSupport : BaseUnityPlugin
         };
         PostArtemis("Difficulty", json);
 
-        client.PostAsync(url + "RunStatsReset", content);
+        PostArtemis("RunStatsReset", "true");
     }
 
     private void OnSceneTypeChanged(SceneCheck.LevelType levelType)
     {
-        //Logger.LogInfo($"Level type changed to {levelType}");
-
+        //Logger.LogInfo($"Scene type changed to {levelType}");
         PostArtemis("CurrentSceneType", levelType.ToString());
     }
 
     private void OnCheckpointRestart()
     {
+        //Logger.LogInfo($"Checkpoint restart");
         PostArtemis("Restarts", StatsManager.Instance.restarts.ToString());
     }
-    
+
     private void OnPause(bool paused)
     {
-        Logger.LogInfo($"Paused: {paused}");
+        //Logger.LogInfo($"Paused: {paused}");
         PostArtemis("Paused", paused.ToString());
     }
-    
+
     private void OnDeath(bool dead)
     {
-        Logger.LogInfo($"Dead: {dead}");
+        //Logger.LogInfo($"Dead: {dead}");
         PostArtemis("Dead", dead.ToString());
+    }
+
+    private void OnCheatsEnabled(bool cheatsEnabled)
+    {
+        //Logger.LogInfo($"Cheats enabled: {cheatsEnabled}");
+        PostArtemis("CheatsEnabled", cheatsEnabled.ToString());
+    }
+
+    private void OnRunCompleted(bool completed)
+    {
+        //Logger.LogInfo($"Run completed");
+        PostArtemis("LevelCompleted", "true");
+    }
+
+    private void OnChallenge(bool completed)
+    {
+        //Logger.LogInfo($"Challenge {completed}");
+        PostArtemis("ChallengeCompleted", completed.ToString());
     }
 }
