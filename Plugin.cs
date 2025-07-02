@@ -64,12 +64,29 @@ public class ArtemisSupport : BaseUnityPlugin
 
         OtherCheck.Init();
         OtherCheck.OnPause += OnPause;
-        OtherCheck.OnDeath += OnDeath;
         OtherCheck.OnCheatsEnabled += OnCheatsEnabled;
 
         RunCheck.Init();
         RunCheck.OnRunCompleted += OnRunCompleted;
         RunCheck.OnChallenge += OnChallenge;
+
+        PlayerCheck.Init();
+
+        PlayerCheck.OnHealthChanged += OnHealthChanged;
+        PlayerCheck.OnHardDamageChanged += OnHardDamageChanged;
+        PlayerCheck.OnStaminaChanged += OnStaminaChanged;
+        PlayerCheck.OnWallJumpsChanged += OnWallJumpsChanged;
+        PlayerCheck.OnSpeedChanged += OnSpeedChanged;
+        //PlayerCheck.OnComboMeterChanged += OnComboMeterChanged;
+        //PlayerCheck.OnComboMeterRankChanged += OnComboMeterRankChanged;
+        //PlayerCheck.OnComboMeterMultiplierChanged += OnComboMeterMultiplierChanged;
+        PlayerCheck.OnSlidingChanged += OnSlidingChanged;
+        PlayerCheck.OnSlamingChanged += OnSlamingChanged;
+        PlayerCheck.OnFallingChanged += OnFallingChanged;
+        PlayerCheck.OnDashingChanged += OnDashingChanged;
+        PlayerCheck.OnDeath += OnDeath;
+
+
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
@@ -78,7 +95,7 @@ public class ArtemisSupport : BaseUnityPlugin
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            Logger.LogInfo($"Challenge done: {ChallengeManager.Instance.challengeDone}");
+            Logger.LogInfo($"Velocity: {PlayerTracker.Instance.GetPlayerVelocity(true).magnitude}");
         }
 
         if (StatsManager.Instance != null)
@@ -241,5 +258,71 @@ public class ArtemisSupport : BaseUnityPlugin
     {
         //Logger.LogInfo($"Challenge {completed}");
         PostArtemis("ChallengeCompleted", completed.ToString());
+    }
+
+    private void OnHealthChanged(int health)
+    {
+        //Logger.LogInfo($"Health changed to {health}");
+        PostArtemis("Health", health.ToString());
+    }
+
+    private void OnHardDamageChanged(float hardDamage)
+    {
+        //Logger.LogInfo($"Hard damage changed to {hardDamage}");
+        PostArtemis("HardDamage", hardDamage.ToString());
+    }
+
+    private void OnStaminaChanged(float stamina)
+    {
+        //Logger.LogInfo($"Stamina changed to {stamina}");
+        PostArtemis("Stamina", stamina.ToString());
+    }
+
+    private void OnWallJumpsChanged(int wallJumps)
+    {
+        //Logger.LogInfo($"Wall jumps changed to {wallJumps}");
+        PostArtemis("RemainingWallJumps", wallJumps.ToString());
+    }
+
+    private void OnSpeedChanged(float speed)
+    {
+        //Logger.LogInfo($"Speed changed to {speed}");
+        PostArtemis("Speed", speed.ToString());
+    }
+
+    /*private void OnComboMeterChanged(int comboMeter)
+    {
+        //Logger.LogInfo($"Combo meter changed to {comboMeter}");
+        PostArtemis("ComboMeter", comboMeter.ToString());
+    }
+
+    private void OnComboMeterRankChanged(int comboMeterRank)
+    {
+        //Logger.LogInfo($"Combo meter rank changed to {comboMeterRank}");
+        PostArtemis("ComboMeterRank", comboMeterRank.ToString());
+    }
+    */
+    private void OnSlidingChanged(bool sliding)
+    {
+        //Logger.LogInfo($"Sliding changed to {sliding}");
+        PostArtemis("Sliding", sliding.ToString());
+    }
+
+    private void OnSlamingChanged(bool slaming)
+    {
+        //Logger.LogInfo($"Slaming changed to {slaming}");
+        PostArtemis("Slaming", slaming.ToString());
+    }
+
+    private void OnFallingChanged(bool falling)
+    {
+        //Logger.LogInfo($"Falling changed to {falling}");
+        PostArtemis("Falling", falling.ToString());
+    }
+
+    private void OnDashingChanged(bool dashing)
+    {
+        //Logger.LogInfo($"Dashing changed to {dashing}");
+        PostArtemis("Dashing", dashing.ToString());
     }
 }

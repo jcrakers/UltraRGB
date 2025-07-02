@@ -17,39 +17,29 @@ public class OtherCheck : MonoBehaviour
             DontDestroyOnLoad(otherGameObject);
         }
     }
-    public delegate void DeathPauseCheatHandler(bool state);
-    public static DeathPauseCheatHandler OnDeath;
-    public static DeathPauseCheatHandler OnPause;
-    public static DeathPauseCheatHandler OnCheatsEnabled;
-    private static bool oldPaused = false;
-    private static bool oldDead = false;
-    private static bool oldCheatsEnabled = false;
+    public delegate void PauseCheatHandler(bool state);
+
+    public static PauseCheatHandler OnPause;
+    public static PauseCheatHandler OnCheatsEnabled;
+    private static bool paused = false;
+    private static bool cheatsEnabled = false;
 
     void Update()
     {
         if (MonoSingleton<OptionsManager>.Instance != null)
         {
-            if (oldPaused != OptionsManager.Instance.paused)
+            if (paused != OptionsManager.Instance.paused)
             {
-                oldPaused = OptionsManager.Instance.paused;
+                paused = OptionsManager.Instance.paused;
                 OnPause?.Invoke(OptionsManager.Instance.paused);
-            }
-        }
-
-        if (MonoSingleton<NewMovement>.Instance != null)
-        {
-            if (oldDead != MonoSingleton<NewMovement>.Instance.dead)
-            {
-                oldDead = MonoSingleton<NewMovement>.Instance.dead;
-                OnDeath?.Invoke(MonoSingleton<NewMovement>.Instance.dead);
             }
         }
 
         if (CheatsController.Instance != null)
         {
-            if (oldCheatsEnabled != CheatsController.Instance.cheatsEnabled)
+            if (cheatsEnabled != CheatsController.Instance.cheatsEnabled)
             {
-                oldCheatsEnabled = CheatsController.Instance.cheatsEnabled;
+                cheatsEnabled = CheatsController.Instance.cheatsEnabled;
                 OnCheatsEnabled?.Invoke(CheatsController.Instance.cheatsEnabled);
             }
         }
