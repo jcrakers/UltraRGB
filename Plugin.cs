@@ -8,8 +8,9 @@ using System.IO;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using HarmonyLib;
 using System;
-
+using System.Linq;
 
 namespace UltrakillArtemisMod;
 
@@ -54,6 +55,7 @@ public class ArtemisSupport : BaseUnityPlugin
     {
         // Plugin startup logic
         Logger = base.Logger;
+
         url = GetArtemisPort();
 
         SceneCheck.Init();
@@ -71,20 +73,22 @@ public class ArtemisSupport : BaseUnityPlugin
         RunCheck.OnChallenge += OnChallenge;
 
         PlayerCheck.Init();
-
         PlayerCheck.OnHealthChanged += OnHealthChanged;
         PlayerCheck.OnHardDamageChanged += OnHardDamageChanged;
         PlayerCheck.OnStaminaChanged += OnStaminaChanged;
         PlayerCheck.OnWallJumpsChanged += OnWallJumpsChanged;
         PlayerCheck.OnSpeedChanged += OnSpeedChanged;
-        //PlayerCheck.OnComboMeterChanged += OnComboMeterChanged;
-        //PlayerCheck.OnComboMeterRankChanged += OnComboMeterRankChanged;
-        //PlayerCheck.OnComboMeterMultiplierChanged += OnComboMeterMultiplierChanged;
+        PlayerCheck.OnStyleMeterChanged += OnStyleMeterChanged;
+        PlayerCheck.OnStyleMeterRankChanged += OnStyleMeterRankChanged;
+        PlayerCheck.OnStyleMeterMultiplierChanged += OnStyleMeterMultiplierChanged;
         PlayerCheck.OnSlidingChanged += OnSlidingChanged;
         PlayerCheck.OnSlamingChanged += OnSlamingChanged;
+        PlayerCheck.OnSlamForceChanged += OnSlamForceChanged;
         PlayerCheck.OnFallingChanged += OnFallingChanged;
-        PlayerCheck.OnDashingChanged += OnDashingChanged;
+        PlayerCheck.OnWipLashingChanged += OnWipLashingChanged;
         PlayerCheck.OnDeath += OnDeath;
+
+        WeaponCheck.Init();
 
 
 
@@ -95,7 +99,7 @@ public class ArtemisSupport : BaseUnityPlugin
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            Logger.LogInfo($"Velocity: {PlayerTracker.Instance.GetPlayerVelocity(true).magnitude}");
+
         }
 
         if (StatsManager.Instance != null)
@@ -287,21 +291,46 @@ public class ArtemisSupport : BaseUnityPlugin
     private void OnSpeedChanged(float speed)
     {
         //Logger.LogInfo($"Speed changed to {speed}");
-        PostArtemis("Speed", speed.ToString());
+        PostArtemis("Speed", Math.Round(speed, 4).ToString());//Need to round to the fourth decimal
     }
 
-    /*private void OnComboMeterChanged(int comboMeter)
+    private void OnStyleMeterChanged(float styleMeter)
     {
-        //Logger.LogInfo($"Combo meter changed to {comboMeter}");
-        PostArtemis("ComboMeter", comboMeter.ToString());
+        //Logger.LogInfo($"Style meter changed to {styleMeter}");
+        styleMeter = Mathf.Clamp(styleMeter, 0, StyleHUD.Instance.currentRank.maxMeter);
+        styleMeter /= StyleHUD.Instance.currentRank.maxMeter;
+        //styleMeter /= 0.75f;
+        styleMeter *= 100f;
+
+        PostArtemis("StyleMeter", styleMeter.ToString());
     }
 
-    private void OnComboMeterRankChanged(int comboMeterRank)
+
+    private List<string> styleMeterRankNameList = ["None", "Destructive", "Chaotic", "Brutal", "Anarchic", "Supreme", "SSadistic", "SSShitstorm", "ULTRAKILL"];
+    private void OnStyleMeterRankChanged(int styleMeterRank)
     {
-        //Logger.LogInfo($"Combo meter rank changed to {comboMeterRank}");
-        PostArtemis("ComboMeterRank", comboMeterRank.ToString());
+
+        if (PlayerCheck.styleMeter > 0f)
+        {
+            styleMeterRank += 1;
+        }
+
+        var json = new
+            {
+            StyleRank = styleMeterRank,
+            StyleRankName = styleMeterRankNameList[styleMeterRank]
+            };
+
+        Logger.LogInfo($"Style meter rank changed to {styleMeterRank}");
+        PostArtemis("StyleRank", json);
     }
-    */
+
+    private void OnStyleMeterMultiplierChanged(float styleMeterMultiplier)
+    {
+        //Logger.LogInfo($"StyleMeterMultiplier changed to {styleMeterMultiplier}");
+        PostArtemis("StyleMultiplier", Math.Round(styleMeterMultiplier, 2).ToString());
+    }
+
     private void OnSlidingChanged(bool sliding)
     {
         //Logger.LogInfo($"Sliding changed to {sliding}");
@@ -314,15 +343,21 @@ public class ArtemisSupport : BaseUnityPlugin
         PostArtemis("Slaming", slaming.ToString());
     }
 
+    private void OnSlamForceChanged(float slamForce)
+    {
+        //Logger.LogInfo($"Slam force changed to {slamForce}");
+        PostArtemis("SlamForce", slamForce.ToString());
+    }
+
     private void OnFallingChanged(bool falling)
     {
         //Logger.LogInfo($"Falling changed to {falling}");
         PostArtemis("Falling", falling.ToString());
     }
-
-    private void OnDashingChanged(bool dashing)
+    
+    private void OnWipLashingChanged(bool jumping)
     {
-        //Logger.LogInfo($"Dashing changed to {dashing}");
-        PostArtemis("Dashing", dashing.ToString());
+        //Logger.LogInfo($"WipeLashing changed to {jumping}");
+        PostArtemis("WipeLashing", jumping.ToString());
     }
 }

@@ -1,4 +1,6 @@
 using UnityEngine;
+using HarmonyLib;
+
 
 namespace UltrakillArtemisMod.Components;
 
@@ -15,7 +17,7 @@ public class PlayerCheck : MonoBehaviour
             playerGameObject.hideFlags = HideFlags.HideAndDontSave;
             playerCheck.enabled = true;
             DontDestroyOnLoad(playerGameObject);
-            ArtemisSupport.Logger.LogInfo($"PlayerCheck Init");
+            //ArtemisSupport.Logger.LogInfo($"PlayerCheck Init");
         }
     }
 
@@ -30,41 +32,42 @@ public class PlayerCheck : MonoBehaviour
     public static PlayerCheckFloatHandler OnStaminaChanged;
     public static PlayerCheckIntHandler OnWallJumpsChanged;
     public static PlayerCheckFloatHandler OnSpeedChanged;
-    //public static PlayerCheckFloatHandler OnComboMeterChanged;
-    //public static PlayerCheckStringHandler OnComboMeterRankChanged;
-    //public static PlayerCheckFloatHandler OnComboMeterMultiplierChanged;
+    public static PlayerCheckFloatHandler OnStyleMeterChanged;
+    public static PlayerCheckIntHandler OnStyleMeterRankChanged;
+    public static PlayerCheckFloatHandler OnStyleMeterMultiplierChanged;
     public static PlayerCheckBoolHandler OnSlidingChanged;
     public static PlayerCheckBoolHandler OnSlamingChanged;
+    public static PlayerCheckFloatHandler OnSlamForceChanged;
     public static PlayerCheckBoolHandler OnFallingChanged;
-    public static PlayerCheckBoolHandler OnDashingChanged;
+    public static PlayerCheckBoolHandler OnWipLashingChanged;
     public static PlayerCheckBoolHandler OnDeath;
-    
+
 
     public int health = 100;
     public float hardDamage = 0f;
     public float stamina = 300f;
     public int wallJumps = 3;
     public float speed = 0f;
-    //public float comboMeter = 0f;
-    //public string comboMeterRank = "None";
+    public static float styleMeter = 0f; private float lastStyleMeter = 0f;
+    public int styleMeterRank = 0; private bool styleMeterAboveZero = false;
+    public float styleMeterMultiplier = 1f;
     public bool sliding = false;
     public bool slaming = false;
+    public float slamForce = 0f;
     public bool falling = false;
-    public bool dashing = false;
+    public bool wipLashing = false;
     public bool dead = false;
-
 
     private NewMovement nm;
 
     void Update()
     {
-        if (NewMovement.Instance != null )
+        if (NewMovement.Instance != null)
         {
             if (nm == null)
             {
                 nm = NewMovement.Instance;
             }
-
 
             if (dead != nm.dead)
             {
@@ -96,29 +99,50 @@ public class PlayerCheck : MonoBehaviour
                 OnWallJumpsChanged?.Invoke((wallJumps - 3) * -1);
             }
 
-            if (speed != PlayerTracker.Instance.GetPlayerVelocity(true).magnitude)
+            if (PlayerTracker.Instance != null)
             {
-                speed = PlayerTracker.Instance.GetPlayerVelocity(true).magnitude;
-                OnSpeedChanged?.Invoke(speed);
+                if (speed != PlayerTracker.Instance.GetPlayerVelocity(true).magnitude)
+                {
+                    speed = PlayerTracker.Instance.GetPlayerVelocity(true).magnitude;
+                    OnSpeedChanged?.Invoke(speed);
+                }
             }
 
-            /*if (comboMeter != nm.comboMeter)
+            if (StyleHUD.Instance != null)
             {
-                comboMeter = nm.comboMeter;
-                OnComboMeterChanged?.Invoke(comboMeter);
+                lastStyleMeter = Traverse.Create(StyleHUD.Instance).Field("currentMeter").GetValue<float>();
+                if (styleMeter != lastStyleMeter)
+                {
+                    styleMeter = lastStyleMeter;
+                    OnStyleMeterChanged?.Invoke(styleMeter);
+
+                    if (styleMeter > 0f && !styleMeterAboveZero)
+                    {
+                        styleMeterAboveZero = true;
+                        OnStyleMeterRankChanged?.Invoke(styleMeterRank);
+                    }
+                    if (styleMeter <= 0f && styleMeterAboveZero && styleMeterRank == 0)
+                    {
+                        styleMeterAboveZero = false;
+                        OnStyleMeterRankChanged?.Invoke(styleMeterRank);
+                    }
+                }
+
+                if (styleMeterRank != StyleHUD.Instance.rankIndex)
+                {
+                    styleMeterRank = StyleHUD.Instance.rankIndex;
+                    OnStyleMeterRankChanged?.Invoke(styleMeterRank);
+                } 
             }
 
-            if (comboMeterRank != nm.comboMeterRank)
+            if (StyleCalculator.Instance != null)
             {
-                comboMeterRank = nm.comboMeterRank;
-                OnComboMeterRankChanged?.Invoke(comboMeterRank);
+                if (styleMeterMultiplier != StyleCalculator.Instance.airTime)
+                {
+                    styleMeterMultiplier = StyleCalculator.Instance.airTime;
+                    OnStyleMeterMultiplierChanged?.Invoke(styleMeterMultiplier);
+                }
             }
-
-            if (comboMeterMultiplier != nm.comboMeterMultiplier)
-            {
-                comboMeterMultiplier = nm.comboMeterMultiplier;
-                OnComboMeterMultiplierChanged?.Invoke(comboMeterMultiplier);
-            }*/
 
             if (sliding != nm.sliding)
             {
@@ -132,16 +156,25 @@ public class PlayerCheck : MonoBehaviour
                 OnSlamingChanged?.Invoke(slaming);
             }
 
-            if (dashing != nm.boost)
+            if (slamForce != nm.slamForce)
             {
-                dashing = nm.boost;
-                OnDashingChanged?.Invoke(dashing);
+                slamForce = nm.slamForce;
+                OnSlamForceChanged?.Invoke(slamForce);
             }
 
             if (falling != nm.falling)
             {
                 falling = nm.falling;
                 OnFallingChanged?.Invoke(falling);
+            }
+
+            if (HookArm.Instance != null)
+            {
+                if (wipLashing != HookArm.Instance.beingPulled)
+                {
+                    wipLashing = HookArm.Instance.beingPulled;
+                    OnWipLashingChanged?.Invoke(wipLashing);
+                }
             }
         }
     }
