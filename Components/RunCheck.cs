@@ -31,7 +31,7 @@ public class RunCheck : MonoBehaviour
 
     void Update()
     {
-        if (StatsManager.Instance != null)
+        if (StatsManager.Instance != null && !OptionsManager.Instance.paused)
         {
             if (oldCompleted != StatsManager.Instance.infoSent)
             {
@@ -42,7 +42,7 @@ public class RunCheck : MonoBehaviour
                 }
             }
         }
-        if (ChallengeManager.Instance != null)
+        if (ChallengeManager.Instance != null && !OptionsManager.Instance.paused)
         {
             if (oldChallenge != ChallengeManager.Instance.challengeDone)
             {

@@ -24,3 +24,4 @@ D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\n
 D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\UltraRGB.pdb
 D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.dll
 D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.pdb
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltrakillArtemisMod.sourcelink.json

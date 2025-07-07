@@ -89,8 +89,14 @@ public class ArtemisSupport : BaseUnityPlugin
         PlayerCheck.OnDeath += OnDeath;
 
         WeaponCheck.Init();
-
-
+        WeaponCheck.OnWeaponChange += OnWeaponChange;
+        WeaponCheck.OnWeaponSlotChange += OnWeaponSlotChange;
+        WeaponCheck.OnAlternateChange += OnAlternateChange;
+        WeaponCheck.OnWeaponVariationChange += OnWeaponVariationChange;
+        WeaponCheck.OnFistChange += OnFistChange;
+        WeaponCheck.OnFistCooldownChange += OnFistCooldownChange;
+        WeaponCheck.OnWeaponFreshnessChange += OnWeaponFreshnessChange;
+        WeaponCheck.OnWeaponFreshnessMeterChange += OnWeaponFreshnessMeterChange;
 
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
@@ -99,7 +105,7 @@ public class ArtemisSupport : BaseUnityPlugin
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-
+            Logger.LogInfo($"{Traverse.Create(StyleHUD.Instance).Field("freshnessSliderValue").GetValue<float>()}");
         }
 
         if (StatsManager.Instance != null)
@@ -125,13 +131,13 @@ public class ArtemisSupport : BaseUnityPlugin
                 {
                     Time = StatsManager.Instance.seconds,
                     Wave = EndlessGrid.Instance.currentWave,
-                    EnemysLeft = EnemyTracker.Instance.GetCurrentEnemies().Count
+                    EnemysLeft = EnemyTracker.Instance.GetCurrentEnemies().Count,
+                    MaxEnemys = EndlessGrid.Instance.tempEnemyAmount
                 };
                 PostArtemis("CyberGrindStats", statsJson);
                 //ResponseAsync(content);
             }
         }
-
     }
 
     string getRank(int type)
@@ -316,12 +322,12 @@ public class ArtemisSupport : BaseUnityPlugin
         }
 
         var json = new
-            {
+        {
             StyleRank = styleMeterRank,
             StyleRankName = styleMeterRankNameList[styleMeterRank]
-            };
+        };
 
-        Logger.LogInfo($"Style meter rank changed to {styleMeterRank}");
+        //Logger.LogInfo($"Style meter rank changed to {styleMeterRank}");
         PostArtemis("StyleRank", json);
     }
 
@@ -354,10 +360,60 @@ public class ArtemisSupport : BaseUnityPlugin
         //Logger.LogInfo($"Falling changed to {falling}");
         PostArtemis("Falling", falling.ToString());
     }
-    
+
     private void OnWipLashingChanged(bool jumping)
     {
         //Logger.LogInfo($"WipeLashing changed to {jumping}");
         PostArtemis("WipeLashing", jumping.ToString());
+    }
+
+    private void OnWeaponChange(string weaponName)
+    {
+        //Logger.LogInfo($"Weapon changed to {weaponName}");
+        PostArtemis("CurrentWeapon", weaponName);
+    }
+
+    private void OnWeaponSlotChange(int slotIndex)
+    {
+        //Logger.LogInfo($"Weapon slot changed to {slotIndex}");
+        PostArtemis("CurrentSlot", slotIndex.ToString());
+    }
+
+    private void OnAlternateChange(bool isAlternate)
+    {
+        //Logger.LogInfo($"Alternate changed to {isAlternate}");
+        PostArtemis("IsAlternate", isAlternate.ToString());
+    }
+
+    private void OnWeaponVariationChange(string variation)
+    {
+        //Logger.LogInfo($"Weapon variation changed to {variationIndex}");
+        PostArtemis("CurrentVariation", variation);
+    }
+
+    private void OnFistChange(string fist)
+    {
+        //Logger.LogInfo($"Fist changed to {isFist}");
+        PostArtemis("CurrentFist", fist);
+    }
+
+    private void OnFistCooldownChange(float fistCooldown)
+    {
+        //Logger.LogInfo($"Fist cooldown changed to {fistCooldown}");
+        PostArtemis("FistCooldown", fistCooldown.ToString());
+    }
+
+    private void OnWeaponFreshnessChange(string weaponFreshnessRank)
+    {
+        //Logger.LogInfo($"Style meter changed to {styleMeter}");
+        PostArtemis("WeaponFreshness", weaponFreshnessRank.ToString());
+    }
+    
+    private void OnWeaponFreshnessMeterChange(float weaponFreshness)
+    {
+        //Logger.LogInfo($"Style meter rank changed to {styleMeterRank}");
+        weaponFreshness = Mathf.InverseLerp(0.5f, 10f, weaponFreshness);
+        weaponFreshness *= 150f;
+        PostArtemis("WeaponFreshnessMeter", weaponFreshness.ToString());
     }
 }

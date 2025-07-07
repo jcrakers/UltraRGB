@@ -24,7 +24,6 @@ public class PlayerCheck : MonoBehaviour
     public delegate void PlayerCheckBoolHandler(bool value);
     public delegate void PlayerCheckIntHandler(int value);
     public delegate void PlayerCheckFloatHandler(float value);
-    public delegate void PlayerCheckStringHandler(string value);
 
 
     public static PlayerCheckIntHandler OnHealthChanged;
@@ -62,13 +61,13 @@ public class PlayerCheck : MonoBehaviour
 
     void Update()
     {
-        if (NewMovement.Instance != null)
+        if (NewMovement.Instance != null && !OptionsManager.Instance.paused)
         {
             if (nm == null)
             {
                 nm = NewMovement.Instance;
             }
-
+    
             if (dead != nm.dead)
             {
                 dead = nm.dead;
