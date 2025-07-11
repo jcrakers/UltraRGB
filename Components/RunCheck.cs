@@ -24,31 +24,41 @@ public class RunCheck : MonoBehaviour
 
     public static RunMarkHandler OnChallenge;
 
-    private static bool oldCompleted = false;
-    private static bool oldChallenge = false;
+    public bool levelCompleted = false;
+    public bool challengeDone = false;
 
 
+    private StatsManager statsManagerCache;
+    private OptionsManager optionsManagerCache;
+    private ChallengeManager challengeManagerCache;
 
     void Update()
     {
-        if (StatsManager.Instance != null && !OptionsManager.Instance.paused)
+        if (statsManagerCache == null || optionsManagerCache == null || challengeManagerCache == null)
         {
-            if (oldCompleted != StatsManager.Instance.infoSent)
+            statsManagerCache = StatsManager.Instance;
+            optionsManagerCache = OptionsManager.Instance;
+            challengeManagerCache = ChallengeManager.Instance;
+        }
+
+        if (statsManagerCache != null && !optionsManagerCache.paused)
+        {
+            if (levelCompleted != statsManagerCache.infoSent)
             {
-                oldCompleted = StatsManager.Instance.infoSent;
-                if (StatsManager.Instance.infoSent)
+                levelCompleted = statsManagerCache.infoSent;
+                if (statsManagerCache.infoSent)
                 {
-                    OnRunCompleted?.Invoke(StatsManager.Instance.infoSent);
+                    OnRunCompleted?.Invoke(statsManagerCache.infoSent);
                 }
             }
         }
-        if (ChallengeManager.Instance != null && !OptionsManager.Instance.paused)
-        {
-            if (oldChallenge != ChallengeManager.Instance.challengeDone)
-            {
-                oldChallenge = ChallengeManager.Instance.challengeDone;
-                OnChallenge?.Invoke(ChallengeManager.Instance.challengeDone);
 
+        if (challengeManagerCache != null && !optionsManagerCache.paused)
+        {
+            if (challengeDone != challengeManagerCache.challengeDone)
+            {
+                challengeDone = challengeManagerCache.challengeDone;
+                OnChallenge?.Invoke(challengeManagerCache.challengeDone);
             }
         }
     }

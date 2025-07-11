@@ -45,22 +45,33 @@ public class WeaponCheck : MonoBehaviour
     public int currentSlot = 0;
     public bool isAlternate = false;
 
-    private GunControl gunControl;
+    private GunControl gunControlCache;
+    private OptionsManager optionsManagerCache;
+    private NewMovement newMovementCache;
+    private FistControl fistControlCache;
+    private WeaponCharges weaponChargesCache;
+    private StyleHUD styleHUDCache;
+
 
     void Update()
     {
-        if (GunControl.Instance != null && !OptionsManager.Instance.paused && NewMovement.Instance != null)
+        if (gunControlCache == null || optionsManagerCache == null || newMovementCache == null || fistControlCache == null || weaponChargesCache == null || styleHUDCache == null)
         {
-            if (gunControl == null)
-            {
-                gunControl = GunControl.Instance;
-            }
+            gunControlCache = GunControl.Instance;
+            optionsManagerCache = OptionsManager.Instance;
+            newMovementCache = NewMovement.Instance;
+            fistControlCache = FistControl.Instance;
+            weaponChargesCache = WeaponCharges.Instance;
+            styleHUDCache = StyleHUD.Instance;
+        }
 
-            if (GunControl.Instance.currentWeapon != null)
+        if (gunControlCache != null && !optionsManagerCache.paused && newMovementCache != null && fistControlCache != null && weaponChargesCache != null && styleHUDCache != null)
+        {
+            if (gunControlCache.currentWeapon != null)
             {
-                if (currentWeapon != gunControl.currentWeapon.name)
+                if (currentWeapon != gunControlCache.currentWeapon.name)
                 {
-                    currentWeapon = gunControl.currentWeapon.name;
+                    currentWeapon = gunControlCache.currentWeapon.name;
                     if (currentWeapon.Contains("(Clone)"))
                         currentWeapon = currentWeapon.Replace("(Clone)", "");
 
@@ -74,41 +85,41 @@ public class WeaponCheck : MonoBehaviour
                 }
             }
 
-            if ((gunControl.currentWeapon == null || gunControl.currentWeapon.name == null) && currentWeapon != "None")
+            if ((gunControlCache.currentWeapon == null || gunControlCache.currentWeapon.name == null) && currentWeapon != "None")
             {
                 currentWeapon = "None";
                 OnWeaponChange.Invoke(currentWeapon);
             }
 
-            if (currentSlot != gunControl.currentSlotIndex)
+            if (currentSlot != gunControlCache.currentSlotIndex)
             {
-                currentSlot = gunControl.currentSlotIndex;
+                currentSlot = gunControlCache.currentSlotIndex;
                 OnWeaponSlotChange?.Invoke(currentSlot);
             }
 
-            if (FistControl.Instance != null && FistControl.Instance.currentArmObject != null)
+            if (fistControlCache != null && fistControlCache.currentArmObject != null)
             {
-                if (CurrentFist != FistControl.Instance.currentArmObject.name)
+                if (CurrentFist != fistControlCache.currentArmObject.name)
                 {
-                    CurrentFist = FistControl.Instance.currentArmObject.name;
+                    CurrentFist = fistControlCache.currentArmObject.name;
                     if (CurrentFist.Contains("(Clone)"))
                         CurrentFist = CurrentFist.Replace("(Clone)", "");
 
                     OnFistChange?.Invoke(CurrentFist);
                 }
 
-                if (fistCooldown != FistControl.Instance.fistCooldown)
+                if (fistCooldown != fistControlCache.fistCooldown)
                 {
-                    fistCooldown = FistControl.Instance.fistCooldown;
+                    fistCooldown = fistControlCache.fistCooldown;
                     OnFistCooldownChange?.Invoke(fistCooldown);
                 }
             }
 
-            if (WeaponCharges.Instance != null)
+            if (weaponChargesCache != null)
             {
-                if (fistCooldown != WeaponCharges.Instance.punchStamina)
+                if (fistCooldown != weaponChargesCache.punchStamina)
                 {
-                    fistCooldown = WeaponCharges.Instance.punchStamina;
+                    fistCooldown = weaponChargesCache.punchStamina;
                     OnFistCooldownChange?.Invoke(fistCooldown);
                 }
             }
@@ -118,17 +129,17 @@ public class WeaponCheck : MonoBehaviour
                 OnFistChange?.Invoke(CurrentFist);
             }
 
-            if (StyleHUD.Instance != null)
+            if (styleHUDCache != null)
             {
-                if (weaponFreshness != StyleHUD.Instance.GetFreshnessState(gunControl.currentWeapon).ToString())
+                if (weaponFreshness != styleHUDCache.GetFreshnessState(gunControlCache.currentWeapon).ToString())
                 {
-                    weaponFreshness = StyleHUD.Instance.GetFreshnessState(gunControl.currentWeapon).ToString();
+                    weaponFreshness = styleHUDCache.GetFreshnessState(gunControlCache.currentWeapon).ToString();
                     OnWeaponFreshnessChange?.Invoke(weaponFreshness);
                 }
 
-                if (weaponFreshnessMeter != Traverse.Create(StyleHUD.Instance).Field("freshnessSliderValue").GetValue<float>())
+                if (weaponFreshnessMeter != Traverse.Create(styleHUDCache).Field("freshnessSliderValue").GetValue<float>())
                 {
-                    weaponFreshnessMeter = Traverse.Create(StyleHUD.Instance).Field("freshnessSliderValue").GetValue<float>();
+                    weaponFreshnessMeter = Traverse.Create(styleHUDCache).Field("freshnessSliderValue").GetValue<float>();
                     OnWeaponFreshnessMeterChange?.Invoke(weaponFreshnessMeter);
                 }
             }
@@ -137,7 +148,7 @@ public class WeaponCheck : MonoBehaviour
 
     private bool FindAlternateWeapon()
     {
-        if (gunControl.currentWeapon == null || gunControl.currentWeapon.name == null)
+        if (gunControlCache.currentWeapon == null || gunControlCache.currentWeapon.name == null)
             return false;
 
         return currentWeapon switch
@@ -153,25 +164,37 @@ public class WeaponCheck : MonoBehaviour
     {
         return currentWeapon switch
         {
-            _ when currentWeapon.Contains("Pierce") => "Blue",
-            _ when currentWeapon.Contains("Ricochet") => "Green",
-            _ when currentWeapon.Contains("Twirl") => "Red",
+            _ when currentWeapon.Equals("Revolver Pierce") => "Blue",
+            _ when currentWeapon.Equals("Revolver Ricochet") => "Green",
+            _ when currentWeapon.Equals("Revolver Twirl") => "Red",
 
-            _ when currentWeapon.Contains("Grenade") => "Blue",
-            _ when currentWeapon.Contains("Pump") => "Green",
-            _ when currentWeapon.Contains(" Saw") => "Red",
+            _ when currentWeapon.Equals("Alternative Revolver Pierce") => "Blue",
+            _ when currentWeapon.Equals("Alternative Revolver Ricochet") => "Green",
+            _ when currentWeapon.Equals("Alternative Revolver Twirl") => "Red",
 
-            _ when currentWeapon.Contains("Magnet") => "Blue",
-            _ when currentWeapon.Contains("Overheat") => "Green",
-            _ when currentWeapon.Contains("Zapper") => "Red",
+            _ when currentWeapon.Equals("Shotgun Grenade") => "Blue",
+            _ when currentWeapon.Equals("Shotgun Pump") => "Green",
+            _ when currentWeapon.Equals("Shotgun Saw") => "Red",
 
-            _ when currentWeapon.Contains("Electric") => "Blue",
-            _ when currentWeapon.Contains("Harpoon") => "Green",
-            _ when currentWeapon.Contains("Malicious") => "Red",
+            _ when currentWeapon.Equals("Hammer Grenade") => "Blue",
+            _ when currentWeapon.Equals("Hammer Pump") => "Green",
+            _ when currentWeapon.Equals("Hammer Saw") => "Red",
 
-            _ when currentWeapon.Contains("Freeze") => "Blue",
-            _ when currentWeapon.Contains("Cannonball") => "Green",
-            _ when currentWeapon.Contains("Napalm") => "Red",
+            _ when currentWeapon.Equals("Nailgun Magnet") => "Blue",
+            _ when currentWeapon.Equals("Nailgun Overheat") => "Green",
+            _ when currentWeapon.Equals("Nailgun Zapper") => "Red",
+
+            _ when currentWeapon.Equals("Sawblade Launcher Magnet") => "Blue",
+            _ when currentWeapon.Equals("Sawblade Launcher Overheat") => "Green",
+            _ when currentWeapon.Equals("Sawblade Launcher Zapper") => "Red",
+
+            _ when currentWeapon.Equals("Railcannon Electric") => "Blue",
+            _ when currentWeapon.Equals("Railcannon Harpoon") => "Green",
+            _ when currentWeapon.Equals("Railcannon Malicious") => "Red",
+
+            _ when currentWeapon.Equals("Rocket Launcher Freeze") => "Blue",
+            _ when currentWeapon.Equals("Rocket Launcher Cannonball") => "Green",
+            _ when currentWeapon.Equals("Rocket Launcher Napalm") => "Red",
             _ => "None"
         };
     }

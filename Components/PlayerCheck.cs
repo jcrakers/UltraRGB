@@ -57,59 +57,71 @@ public class PlayerCheck : MonoBehaviour
     public bool wipLashing = false;
     public bool dead = false;
 
-    private NewMovement nm;
+    private GunControl gunControlCache;
+    private OptionsManager optionsManagerCache;
+    private PlayerTracker playerTrackerCache;
+    private NewMovement newMovementCache;
+    private StyleHUD styleHUDCache;
+    private StyleCalculator styleCalculatorCache;
+    private HookArm hookArmCache;
 
     void Update()
     {
-        if (NewMovement.Instance != null && !OptionsManager.Instance.paused)
+        if (gunControlCache == null || playerTrackerCache == null || newMovementCache == null || styleHUDCache == null || styleCalculatorCache == null || hookArmCache == null)
         {
-            if (nm == null)
+            gunControlCache = GunControl.Instance;
+            optionsManagerCache = OptionsManager.Instance;
+            playerTrackerCache = PlayerTracker.Instance;
+            newMovementCache = NewMovement.Instance;
+            styleHUDCache = StyleHUD.Instance;
+            styleCalculatorCache = StyleCalculator.Instance;
+            hookArmCache = HookArm.Instance;
+        }
+
+        if (gunControlCache != null && !optionsManagerCache.paused && newMovementCache != null && styleHUDCache != null && styleCalculatorCache != null && hookArmCache != null)
+        {
+            if (dead != newMovementCache.dead)
             {
-                nm = NewMovement.Instance;
-            }
-    
-            if (dead != nm.dead)
-            {
-                dead = nm.dead;
+                dead = newMovementCache.dead;
                 OnDeath?.Invoke(dead);
             }
 
-            if (health != nm.hp)
+            if (health != newMovementCache.hp)
             {
-                health = nm.hp;
+                health = newMovementCache.hp;
                 OnHealthChanged?.Invoke(health);
             }
 
-            if (hardDamage != nm.antiHp)
+            if (hardDamage != newMovementCache.antiHp)
             {
-                hardDamage = nm.antiHp;
+                hardDamage = newMovementCache.antiHp;
                 OnHardDamageChanged?.Invoke(hardDamage);
             }
 
-            if (stamina != nm.boostCharge)
+            if (stamina != newMovementCache.boostCharge)
             {
-                stamina = nm.boostCharge;
+                stamina = newMovementCache.boostCharge;
                 OnStaminaChanged?.Invoke(stamina);
             }
 
-            if (wallJumps != nm.currentWallJumps)
+            if (wallJumps != newMovementCache.currentWallJumps)
             {
-                wallJumps = nm.currentWallJumps;
+                wallJumps = newMovementCache.currentWallJumps;
                 OnWallJumpsChanged?.Invoke((wallJumps - 3) * -1);
             }
 
-            if (PlayerTracker.Instance != null)
+            if (playerTrackerCache != null)
             {
-                if (speed != PlayerTracker.Instance.GetPlayerVelocity(true).magnitude)
+                if (speed != playerTrackerCache.GetPlayerVelocity(true).magnitude)
                 {
-                    speed = PlayerTracker.Instance.GetPlayerVelocity(true).magnitude;
+                    speed = playerTrackerCache.GetPlayerVelocity(true).magnitude;
                     OnSpeedChanged?.Invoke(speed);
                 }
             }
 
-            if (StyleHUD.Instance != null)
+            if (styleHUDCache != null)
             {
-                lastStyleMeter = Traverse.Create(StyleHUD.Instance).Field("currentMeter").GetValue<float>();
+                lastStyleMeter = Traverse.Create(styleHUDCache).Field("currentMeter").GetValue<float>();
                 if (styleMeter != lastStyleMeter)
                 {
                     styleMeter = lastStyleMeter;
@@ -127,51 +139,51 @@ public class PlayerCheck : MonoBehaviour
                     }
                 }
 
-                if (styleMeterRank != StyleHUD.Instance.rankIndex)
+                if (styleMeterRank != styleHUDCache.rankIndex)
                 {
-                    styleMeterRank = StyleHUD.Instance.rankIndex;
+                    styleMeterRank = styleHUDCache.rankIndex;
                     OnStyleMeterRankChanged?.Invoke(styleMeterRank);
-                } 
+                }
             }
 
-            if (StyleCalculator.Instance != null)
+            if (styleCalculatorCache != null)
             {
-                if (styleMeterMultiplier != StyleCalculator.Instance.airTime)
+                if (styleMeterMultiplier != styleCalculatorCache.airTime)
                 {
-                    styleMeterMultiplier = StyleCalculator.Instance.airTime;
+                    styleMeterMultiplier = styleCalculatorCache.airTime;
                     OnStyleMeterMultiplierChanged?.Invoke(styleMeterMultiplier);
                 }
             }
 
-            if (sliding != nm.sliding)
+            if (sliding != newMovementCache.sliding)
             {
-                sliding = nm.sliding;
+                sliding = newMovementCache.sliding;
                 OnSlidingChanged?.Invoke(sliding);
             }
 
-            if (slaming != nm.gc.heavyFall)
+            if (slaming != newMovementCache.gc.heavyFall)
             {
-                slaming = nm.gc.heavyFall;
+                slaming = newMovementCache.gc.heavyFall;
                 OnSlamingChanged?.Invoke(slaming);
             }
 
-            if (slamForce != nm.slamForce)
+            if (slamForce != newMovementCache.slamForce)
             {
-                slamForce = nm.slamForce;
+                slamForce = newMovementCache.slamForce;
                 OnSlamForceChanged?.Invoke(slamForce);
             }
 
-            if (falling != nm.falling)
+            if (falling != newMovementCache.falling)
             {
-                falling = nm.falling;
+                falling = newMovementCache.falling;
                 OnFallingChanged?.Invoke(falling);
             }
 
-            if (HookArm.Instance != null)
+            if (hookArmCache != null)
             {
-                if (wipLashing != HookArm.Instance.beingPulled)
+                if (wipLashing != hookArmCache.beingPulled)
                 {
-                    wipLashing = HookArm.Instance.beingPulled;
+                    wipLashing = hookArmCache.beingPulled;
                     OnWipLashingChanged?.Invoke(wipLashing);
                 }
             }

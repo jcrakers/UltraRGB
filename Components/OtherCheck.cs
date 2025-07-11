@@ -21,26 +21,36 @@ public class OtherCheck : MonoBehaviour
 
     public static PauseCheatHandler OnPause;
     public static PauseCheatHandler OnCheatsEnabled;
+
     private static bool paused = false;
     private static bool cheatsEnabled = false;
 
+    private OptionsManager optionsManagerCache;
+    private CheatsController cheatsControllerCache;
+
     void Update()
     {
-        if (MonoSingleton<OptionsManager>.Instance != null)
+        if (optionsManagerCache == null || cheatsControllerCache == null)
         {
-            if (paused != OptionsManager.Instance.paused)
+            optionsManagerCache = OptionsManager.Instance;
+            cheatsControllerCache = CheatsController.Instance;
+        }
+
+        if (optionsManagerCache != null)
+        {
+            if (paused != optionsManagerCache.paused)
             {
-                paused = OptionsManager.Instance.paused;
-                OnPause?.Invoke(OptionsManager.Instance.paused);
+                paused = optionsManagerCache.paused;
+                OnPause?.Invoke(optionsManagerCache.paused);
             }
         }
 
-        if (CheatsController.Instance != null)
+        if (cheatsControllerCache != null && !paused)
         {
-            if (cheatsEnabled != CheatsController.Instance.cheatsEnabled)
+            if (cheatsEnabled != cheatsControllerCache.cheatsEnabled)
             {
-                cheatsEnabled = CheatsController.Instance.cheatsEnabled;
-                OnCheatsEnabled?.Invoke(CheatsController.Instance.cheatsEnabled);
+                cheatsEnabled = cheatsControllerCache.cheatsEnabled;
+                OnCheatsEnabled?.Invoke(cheatsControllerCache.cheatsEnabled);
             }
         }
     }

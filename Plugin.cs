@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using System.Net.Http;
-using ULTRAKILL;
 using UnityEngine;
 using UltrakillArtemisMod.Components;
 using System.IO;
@@ -10,7 +9,6 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using HarmonyLib;
 using System;
-using System.Linq;
 
 namespace UltrakillArtemisMod;
 
@@ -400,6 +398,7 @@ public class ArtemisSupport : BaseUnityPlugin
     private void OnFistCooldownChange(float fistCooldown)
     {
         //Logger.LogInfo($"Fist cooldown changed to {fistCooldown}");
+        fistCooldown *= 50f;
         PostArtemis("FistCooldown", fistCooldown.ToString());
     }
 
