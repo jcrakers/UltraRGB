@@ -2733,11 +2733,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\Ultrakill Artemis Mod\\UltrakillArtemisMod.csproj",
+      "projectUniqueName": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\UltraRGB\\UltraRGB.csproj",
       "projectName": "UltraRGB",
-      "projectPath": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\Ultrakill Artemis Mod\\UltrakillArtemisMod.csproj",
+      "projectPath": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\UltraRGB\\UltraRGB.csproj",
       "packagesPath": "C:\\Users\\john\\.nuget\\packages\\",
-      "outputPath": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\Ultrakill Artemis Mod\\obj\\",
+      "outputPath": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\UltraRGB\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\john\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltrakillArtemisMod", "UltrakillArtemisMod.csproj", "{F9162A45-0C9D-F420-525B-EF455B5BB8D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltraRGB", "UltraRGB.csproj", "{F9162A45-0C9D-F420-525B-EF455B5BB8D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 using UnityEngine.SceneManagement;
 
-namespace UltrakillArtemisMod.Components;
+namespace UltraRGB.Components;
 
 public static class SceneCheck
 {

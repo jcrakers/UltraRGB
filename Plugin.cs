@@ -2,7 +2,7 @@
 using BepInEx.Logging;
 using System.Net.Http;
 using UnityEngine;
-using UltrakillArtemisMod.Components;
+using UltraRGB.Components;
 using System.IO;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
@@ -10,13 +10,13 @@ using System.Collections.Generic;
 using HarmonyLib;
 using System;
 
-namespace UltrakillArtemisMod;
+namespace UltraRGB;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-public class ArtemisSupport : BaseUnityPlugin
+public class UltraRGB : BaseUnityPlugin
 {
     public static new ManualLogSource Logger;
-    private static readonly HttpClient client = new HttpClient();
+    private static readonly HttpClient client = new();
     public static string url = "";
 
     private void PostArtemis(string endPoint, string content)
@@ -96,10 +96,10 @@ public class ArtemisSupport : BaseUnityPlugin
         WeaponCheck.OnWeaponFreshnessChange += OnWeaponFreshnessChange;
         WeaponCheck.OnWeaponFreshnessMeterChange += OnWeaponFreshnessMeterChange;
 
-        Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+        Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID}");
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {

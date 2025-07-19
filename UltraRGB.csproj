@@ -13,7 +13,7 @@
       		https://nuget.bepinex.dev/v3/index.json;
       		https://nuget.samboy.dev/v3/index.json
     	</RestoreAdditionalProjectSources>
-    	<RootNamespace>UltrakillArtemisMod</RootNamespace>
+    	<RootNamespace>UltraRGB</RootNamespace>
   	</PropertyGroup>
 
   	<ItemGroup>
@@ -29,4 +29,12 @@
       		<HintPath>Libs\Assembly-CSharp.dll</HintPath>
     	</Reference>
   	</ItemGroup>
+
+	<Target Name="CopyDLLs" AfterTargets="Build">
+    	<Message Text="Executing CopyDLLs task" Importance="High" />
+    	<Copy
+      		SourceFiles="$(TargetDir)$(ProjectName).dll;"
+      		DestinationFolder="C:\Users\john\AppData\Roaming\r2modmanPlus-local\ULTRAKILL\profiles\Default\BepInEx\plugins\Unknown-UltrakillArtemisMod" />
+    	<Message Text="Copied build files" Importance="High" />
+  	</Target>
 </Project>

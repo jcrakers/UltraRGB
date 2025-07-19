@@ -1,4 +1,4 @@
-namespace UltrakillArtemisMod
+namespace UltraRGB
 {
     public static class MyPluginInfo
     {

@@ -1,7 +1,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace UltrakillArtemisMod.Components;
+namespace UltraRGB.Components;
 
 public class WeaponCheck : MonoBehaviour
 {
@@ -11,12 +11,12 @@ public class WeaponCheck : MonoBehaviour
         if (!initialized)
         {
             initialized = true;
-            GameObject WeaponGameObject = new GameObject("OtherCheck");
+            GameObject WeaponGameObject = new("OtherCheck");
             WeaponCheck GunCheck = WeaponGameObject.AddComponent<WeaponCheck>();
             WeaponGameObject.hideFlags = HideFlags.HideAndDontSave;
             GunCheck.enabled = true;
             DontDestroyOnLoad(WeaponGameObject);
-            ArtemisSupport.Logger.LogInfo($"GunCheck Init");
+            //UltraRGB.Logger.LogInfo($"GunCheck Init");
         }
     }
 
@@ -36,14 +36,14 @@ public class WeaponCheck : MonoBehaviour
     public static GunCheckBoolHandler OnAlternateChange;
 
 
-    public string currentWeapon = "";
-    public string currentVariation = "";
-    public string CurrentFist = "";
-    public string weaponFreshness = "";
-    public float weaponFreshnessMeter = 0f;
-    public float fistCooldown = 0f;
-    public int currentSlot = 0;
-    public bool isAlternate = false;
+    public static string currentWeapon = "";
+    public static string currentVariation = "";
+    public static string CurrentFist = "";
+    public static string weaponFreshness = "";
+    public static float weaponFreshnessMeter = 0f; private Traverse lastWeaponFreshnessMeter;
+    public static float fistCooldown = 0f;
+    public static int currentSlot = 0;
+    public static bool isAlternate = false;
 
     private GunControl gunControlCache;
     private OptionsManager optionsManagerCache;
@@ -53,7 +53,7 @@ public class WeaponCheck : MonoBehaviour
     private StyleHUD styleHUDCache;
 
 
-    void Update()
+    private void LateUpdate()
     {
         if (gunControlCache == null || optionsManagerCache == null || newMovementCache == null || fistControlCache == null || weaponChargesCache == null || styleHUDCache == null)
         {
@@ -63,6 +63,7 @@ public class WeaponCheck : MonoBehaviour
             fistControlCache = FistControl.Instance;
             weaponChargesCache = WeaponCharges.Instance;
             styleHUDCache = StyleHUD.Instance;
+            lastWeaponFreshnessMeter = Traverse.Create(styleHUDCache).Field("freshnessSliderValue");
         }
 
         if (gunControlCache != null && !optionsManagerCache.paused && newMovementCache != null && fistControlCache != null && weaponChargesCache != null && styleHUDCache != null)
@@ -137,9 +138,9 @@ public class WeaponCheck : MonoBehaviour
                     OnWeaponFreshnessChange?.Invoke(weaponFreshness);
                 }
 
-                if (weaponFreshnessMeter != Traverse.Create(styleHUDCache).Field("freshnessSliderValue").GetValue<float>())
+                if (weaponFreshnessMeter != lastWeaponFreshnessMeter.GetValue<float>())
                 {
-                    weaponFreshnessMeter = Traverse.Create(styleHUDCache).Field("freshnessSliderValue").GetValue<float>();
+                    weaponFreshnessMeter = lastWeaponFreshnessMeter.GetValue<float>();
                     OnWeaponFreshnessMeterChange?.Invoke(weaponFreshnessMeter);
                 }
             }

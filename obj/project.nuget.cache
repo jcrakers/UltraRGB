@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+aFbYFHUwZE=",
+  "dgSpecHash": "y5bunFti3lg=",
   "success": true,
-  "projectFilePath": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\Ultrakill Artemis Mod\\UltrakillArtemisMod.csproj",
+  "projectFilePath": "D:\\Users\\John\\Documents\\Projects\\Ultrakill Mod\\UltraRGB\\UltraRGB.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\john\\.nuget\\packages\\bepinex.analyzers\\1.0.8\\bepinex.analyzers.1.0.8.nupkg.sha512",
     "C:\\Users\\john\\.nuget\\packages\\bepinex.baselib\\5.4.20\\bepinex.baselib.5.4.20.nupkg.sha512",

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UltrakillArtemisMod.Components;
+namespace UltraRGB.Components;
 
 public class OtherCheck : MonoBehaviour
 {
@@ -10,7 +10,7 @@ public class OtherCheck : MonoBehaviour
         if (!initialized)
         {
             initialized = true;
-            GameObject otherGameObject = new GameObject("OtherCheck");
+            GameObject otherGameObject = new("OtherCheck");
             OtherCheck otherCheck = otherGameObject.AddComponent<OtherCheck>();
             otherGameObject.hideFlags = HideFlags.HideAndDontSave;
             otherCheck.enabled = true;
@@ -28,7 +28,7 @@ public class OtherCheck : MonoBehaviour
     private OptionsManager optionsManagerCache;
     private CheatsController cheatsControllerCache;
 
-    void Update()
+    private void LateUpdate()
     {
         if (optionsManagerCache == null || cheatsControllerCache == null)
         {

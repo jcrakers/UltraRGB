@@ -1,0 +1,28 @@
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\UltraRGB.deps.json
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\UltraRGB.dll
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\UltraRGB.pdb
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\bin\Debug\netstandard2.1\Assembly-CSharp.dll
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.csproj.AssemblyReference.cache
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\MyPluginInfo.cs
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.GeneratedMSBuildEditorConfig.editorconfig
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.AssemblyInfoInputs.cache
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.AssemblyInfo.cs
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.csproj.CoreCompileInputs.cache
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.sourcelink.json
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.csproj.Up2Date
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.dll
+D:\Users\John\Documents\Projects\Ultrakill Mod\Ultrakill Artemis Mod\obj\Debug\netstandard2.1\UltraRGB.pdb
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\obj\Debug\netstandard2.1\UltraRGB.csproj.AssemblyReference.cache
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\obj\Debug\netstandard2.1\MyPluginInfo.cs
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\obj\Debug\netstandard2.1\UltraRGB.GeneratedMSBuildEditorConfig.editorconfig
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\obj\Debug\netstandard2.1\UltraRGB.AssemblyInfoInputs.cache
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\obj\Debug\netstandard2.1\UltraRGB.AssemblyInfo.cs
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\obj\Debug\netstandard2.1\UltraRGB.csproj.CoreCompileInputs.cache
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\obj\Debug\netstandard2.1\UltraRGB.sourcelink.json
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\obj\Debug\netstandard2.1\UltraRGB.dll
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\obj\Debug\netstandard2.1\UltraRGB.pdb
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\bin\Debug\netstandard2.1\UltraRGB.deps.json
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\bin\Debug\netstandard2.1\UltraRGB.dll
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\bin\Debug\netstandard2.1\UltraRGB.pdb
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\bin\Debug\netstandard2.1\Assembly-CSharp.dll
+D:\Users\John\Documents\Projects\Ultrakill Mod\UltraRGB\obj\Debug\netstandard2.1\UltraRGB.csproj.Up2Date

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UltrakillArtemisMod.Components;
+namespace UltraRGB.Components;
 
 public class RunCheck : MonoBehaviour
 {
@@ -10,7 +10,7 @@ public class RunCheck : MonoBehaviour
         if (!initialized)
         {
             initialized = true;
-            GameObject runGameObject = new GameObject("RunCheck");
+            GameObject runGameObject = new("RunCheck");
             RunCheck RunCheck = runGameObject.AddComponent<RunCheck>();
             runGameObject.hideFlags = HideFlags.HideAndDontSave;
             RunCheck.enabled = true;
@@ -24,15 +24,15 @@ public class RunCheck : MonoBehaviour
 
     public static RunMarkHandler OnChallenge;
 
-    public bool levelCompleted = false;
-    public bool challengeDone = false;
+    public static bool levelCompleted = false;
+    public static bool challengeDone = false;
 
 
     private StatsManager statsManagerCache;
     private OptionsManager optionsManagerCache;
     private ChallengeManager challengeManagerCache;
 
-    void Update()
+    private void LateUpdate()
     {
         if (statsManagerCache == null || optionsManagerCache == null || challengeManagerCache == null)
         {

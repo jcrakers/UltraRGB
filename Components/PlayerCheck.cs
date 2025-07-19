@@ -2,7 +2,7 @@ using UnityEngine;
 using HarmonyLib;
 
 
-namespace UltrakillArtemisMod.Components;
+namespace UltraRGB.Components;
 
 public class PlayerCheck : MonoBehaviour
 {
@@ -12,12 +12,12 @@ public class PlayerCheck : MonoBehaviour
         if (!initialized)
         {
             initialized = true;
-            GameObject playerGameObject = new GameObject("OtherCheck");
+            GameObject playerGameObject = new("OtherCheck");
             PlayerCheck playerCheck = playerGameObject.AddComponent<PlayerCheck>();
             playerGameObject.hideFlags = HideFlags.HideAndDontSave;
             playerCheck.enabled = true;
             DontDestroyOnLoad(playerGameObject);
-            //ArtemisSupport.Logger.LogInfo($"PlayerCheck Init");
+            //UltraRGB.Logger.LogInfo($"PlayerCheck Init");
         }
     }
 
@@ -42,20 +42,20 @@ public class PlayerCheck : MonoBehaviour
     public static PlayerCheckBoolHandler OnDeath;
 
 
-    public int health = 100;
-    public float hardDamage = 0f;
-    public float stamina = 300f;
-    public int wallJumps = 3;
-    public float speed = 0f;
-    public static float styleMeter = 0f; private float lastStyleMeter = 0f;
-    public int styleMeterRank = 0; private bool styleMeterAboveZero = false;
-    public float styleMeterMultiplier = 1f;
-    public bool sliding = false;
-    public bool slaming = false;
-    public float slamForce = 0f;
-    public bool falling = false;
-    public bool wipLashing = false;
-    public bool dead = false;
+    public static int health = 100;
+    public static float hardDamage = 0f;
+    public static float stamina = 300f;
+    public static int wallJumps = 3;
+    public static float speed = 0f;
+    public static float styleMeter = 0f; private Traverse lastStyleMeter;
+    public static int styleMeterRank = 0; private bool styleMeterAboveZero = false;
+    public static float styleMeterMultiplier = 1f;
+    public static bool sliding = false;
+    public static bool slaming = false;
+    public static float slamForce = 0f;
+    public static bool falling = false;
+    public static bool wipLashing = false;
+    public static bool dead = false;
 
     private GunControl gunControlCache;
     private OptionsManager optionsManagerCache;
@@ -65,7 +65,7 @@ public class PlayerCheck : MonoBehaviour
     private StyleCalculator styleCalculatorCache;
     private HookArm hookArmCache;
 
-    void Update()
+    private void LateUpdate()
     {
         if (gunControlCache == null || playerTrackerCache == null || newMovementCache == null || styleHUDCache == null || styleCalculatorCache == null || hookArmCache == null)
         {
@@ -76,6 +76,7 @@ public class PlayerCheck : MonoBehaviour
             styleHUDCache = StyleHUD.Instance;
             styleCalculatorCache = StyleCalculator.Instance;
             hookArmCache = HookArm.Instance;
+            lastStyleMeter = Traverse.Create(styleHUDCache).Field("currentMeter");
         }
 
         if (gunControlCache != null && !optionsManagerCache.paused && newMovementCache != null && styleHUDCache != null && styleCalculatorCache != null && hookArmCache != null)
@@ -121,10 +122,9 @@ public class PlayerCheck : MonoBehaviour
 
             if (styleHUDCache != null)
             {
-                lastStyleMeter = Traverse.Create(styleHUDCache).Field("currentMeter").GetValue<float>();
-                if (styleMeter != lastStyleMeter)
+                if (styleMeter != lastStyleMeter.GetValue<float>())
                 {
-                    styleMeter = lastStyleMeter;
+                    styleMeter = lastStyleMeter.GetValue<float>();
                     OnStyleMeterChanged?.Invoke(styleMeter);
 
                     if (styleMeter > 0f && !styleMeterAboveZero)
