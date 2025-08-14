@@ -32,19 +32,6 @@ public static class SceneCheck
     /// </summary>
     public static string CurrentSceneName = "";
 
-    public delegate void OnLevelChangedHandler(LevelType LevelType);
-
-    /// <summary>
-    /// Invoked whenever the current level type is changed.
-    /// </summary>
-    public static OnLevelChangedHandler OnSceneTypeChanged;
-
-    /// <summary>
-    /// Invoked whenever the scene is changed.
-    /// </summary>
-    public static OnLevelChangedHandler OnSceneChanged;
-
-
     private static void OnSceneLoad(Scene scene, LoadSceneMode loadSceneMode)
     {
         if (scene != SceneManager.GetActiveScene())
@@ -56,11 +43,25 @@ public static class SceneCheck
         {
             CurrentLevelType = newScene;
             CurrentSceneName = SceneHelper.CurrentScene;
-            OnSceneTypeChanged?.Invoke(newScene);
+            UltraRGB.QueueUpdate("OtherCurrentSceneType", CurrentLevelType);
         }
 
+        UltraRGB.QueueUpdate("OtherCurrentSceneName", CurrentSceneName);
 
-        OnSceneChanged?.Invoke(CurrentLevelType);
+        var difficulty = PrefsManager.Instance.GetInt("difficulty");
+        var difficultyName = difficulty switch
+        {
+            0 => "Harmless",
+            1 => "Lenient",
+            2 => "Standard",
+            3 => "Violent",
+            4 => "Brutal",
+            5 => "UMD",
+            _ => "Unknown"
+        };
+
+        UltraRGB.QueueUpdate("OtherDifficulty", difficulty);
+        UltraRGB.QueueUpdate("OtherDifficultyName", difficultyName);
     }
     
     public static LevelType GetLevelType(string sceneName)

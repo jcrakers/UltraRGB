@@ -2,33 +2,15 @@ using UnityEngine;
 
 namespace UltraRGB.Components;
 
-public class OtherCheck : MonoBehaviour
+public class OtherCheck : BaseCheck
 {
-    private static bool initialized;
-    public static void Init()
-    {
-        if (!initialized)
-        {
-            initialized = true;
-            GameObject otherGameObject = new("OtherCheck");
-            OtherCheck otherCheck = otherGameObject.AddComponent<OtherCheck>();
-            otherGameObject.hideFlags = HideFlags.HideAndDontSave;
-            otherCheck.enabled = true;
-            DontDestroyOnLoad(otherGameObject);
-        }
-    }
-    public delegate void PauseCheatHandler(bool state);
-
-    public static PauseCheatHandler OnPause;
-    public static PauseCheatHandler OnCheatsEnabled;
-
     private static bool paused = false;
     private static bool cheatsEnabled = false;
 
     private OptionsManager optionsManagerCache;
     private CheatsController cheatsControllerCache;
 
-    private void LateUpdate()
+    protected override void RateLimitedUpdate()
     {
         if (optionsManagerCache == null || cheatsControllerCache == null)
         {
@@ -41,7 +23,7 @@ public class OtherCheck : MonoBehaviour
             if (paused != optionsManagerCache.paused)
             {
                 paused = optionsManagerCache.paused;
-                OnPause?.Invoke(optionsManagerCache.paused);
+                UltraRGB.QueueUpdate("OtherPaused", paused);
             }
         }
 
@@ -50,7 +32,7 @@ public class OtherCheck : MonoBehaviour
             if (cheatsEnabled != cheatsControllerCache.cheatsEnabled)
             {
                 cheatsEnabled = cheatsControllerCache.cheatsEnabled;
-                OnCheatsEnabled?.Invoke(cheatsControllerCache.cheatsEnabled);
+                UltraRGB.QueueUpdate("OtherCheatsEnabled", cheatsEnabled);
             }
         }
     }

@@ -1,54 +1,19 @@
 using UnityEngine;
 using HarmonyLib;
-
+using System.Collections.Generic;
+using System;
 
 namespace UltraRGB.Components;
 
-public class PlayerCheck : MonoBehaviour
+public class PlayerCheck : BaseCheck
 {
-    private static bool initialized;
-    public static void Init()
-    {
-        if (!initialized)
-        {
-            initialized = true;
-            GameObject playerGameObject = new("OtherCheck");
-            PlayerCheck playerCheck = playerGameObject.AddComponent<PlayerCheck>();
-            playerGameObject.hideFlags = HideFlags.HideAndDontSave;
-            playerCheck.enabled = true;
-            DontDestroyOnLoad(playerGameObject);
-            //UltraRGB.Logger.LogInfo($"PlayerCheck Init");
-        }
-    }
-
-    public delegate void PlayerCheckBoolHandler(bool value);
-    public delegate void PlayerCheckIntHandler(int value);
-    public delegate void PlayerCheckFloatHandler(float value);
-
-
-    public static PlayerCheckIntHandler OnHealthChanged;
-    public static PlayerCheckFloatHandler OnHardDamageChanged;
-    public static PlayerCheckFloatHandler OnStaminaChanged;
-    public static PlayerCheckIntHandler OnWallJumpsChanged;
-    public static PlayerCheckFloatHandler OnSpeedChanged;
-    public static PlayerCheckFloatHandler OnStyleMeterChanged;
-    public static PlayerCheckIntHandler OnStyleMeterRankChanged;
-    public static PlayerCheckFloatHandler OnStyleMeterMultiplierChanged;
-    public static PlayerCheckBoolHandler OnSlidingChanged;
-    public static PlayerCheckBoolHandler OnSlamingChanged;
-    public static PlayerCheckFloatHandler OnSlamForceChanged;
-    public static PlayerCheckBoolHandler OnFallingChanged;
-    public static PlayerCheckBoolHandler OnWipLashingChanged;
-    public static PlayerCheckBoolHandler OnDeath;
-
-
     public static int health = 100;
     public static float hardDamage = 0f;
     public static float stamina = 300f;
     public static int wallJumps = 3;
     public static float speed = 0f;
     public static float styleMeter = 0f; private Traverse lastStyleMeter;
-    public static int styleMeterRank = 0; private bool styleMeterAboveZero = false;
+    public static int styleMeterRank = 0; private bool styleMeterAboveZero = false; private readonly List<string> styleMeterRankNameList = ["None", "Destructive", "Chaotic", "Brutal", "Anarchic", "Supreme", "SSadistic", "SSShitstorm", "ULTRAKILL"];
     public static float styleMeterMultiplier = 1f;
     public static bool sliding = false;
     public static bool slaming = false;
@@ -65,7 +30,7 @@ public class PlayerCheck : MonoBehaviour
     private StyleCalculator styleCalculatorCache;
     private HookArm hookArmCache;
 
-    private void LateUpdate()
+    protected override void RateLimitedUpdate()
     {
         if (gunControlCache == null || playerTrackerCache == null || newMovementCache == null || styleHUDCache == null || styleCalculatorCache == null || hookArmCache == null)
         {
@@ -84,39 +49,39 @@ public class PlayerCheck : MonoBehaviour
             if (dead != newMovementCache.dead)
             {
                 dead = newMovementCache.dead;
-                OnDeath?.Invoke(dead);
+                UltraRGB.QueueUpdate("PlayerDead", dead);
             }
 
             if (health != newMovementCache.hp)
             {
                 health = newMovementCache.hp;
-                OnHealthChanged?.Invoke(health);
+                UltraRGB.QueueUpdate("PlayerHealth", health);
             }
 
             if (hardDamage != newMovementCache.antiHp)
             {
                 hardDamage = newMovementCache.antiHp;
-                OnHardDamageChanged?.Invoke(hardDamage);
+                UltraRGB.QueueUpdate("PlayerHardDamage", hardDamage);
             }
 
             if (stamina != newMovementCache.boostCharge)
             {
                 stamina = newMovementCache.boostCharge;
-                OnStaminaChanged?.Invoke(stamina);
+                UltraRGB.QueueUpdate("PlayerStamina", stamina);
             }
 
             if (wallJumps != newMovementCache.currentWallJumps)
             {
                 wallJumps = newMovementCache.currentWallJumps;
-                OnWallJumpsChanged?.Invoke((wallJumps - 3) * -1);
+                UltraRGB.QueueUpdate("PlayerWallJumps", (wallJumps - 3) * -1);
             }
 
             if (playerTrackerCache != null)
             {
-                if (speed != playerTrackerCache.GetPlayerVelocity(true).magnitude)
+                if (Mathf.Abs(speed - playerTrackerCache.GetPlayerVelocity(true).magnitude) > 0.01f)
                 {
                     speed = playerTrackerCache.GetPlayerVelocity(true).magnitude;
-                    OnSpeedChanged?.Invoke(speed);
+                    UltraRGB.QueueUpdate("PlayerSpeed", speed);
                 }
             }
 
@@ -125,24 +90,24 @@ public class PlayerCheck : MonoBehaviour
                 if (styleMeter != lastStyleMeter.GetValue<float>())
                 {
                     styleMeter = lastStyleMeter.GetValue<float>();
-                    OnStyleMeterChanged?.Invoke(styleMeter);
+                    UltraRGB.QueueUpdate("PlayerStyleMeter", Mathf.Clamp(styleMeter, 0, styleHUDCache.currentRank.maxMeter) / styleHUDCache.currentRank.maxMeter * 100f);
 
-                    if (styleMeter > 0f && !styleMeterAboveZero)
-                    {
-                        styleMeterAboveZero = true;
-                        OnStyleMeterRankChanged?.Invoke(styleMeterRank);
-                    }
-                    if (styleMeter <= 0f && styleMeterAboveZero && styleMeterRank == 0)
-                    {
-                        styleMeterAboveZero = false;
-                        OnStyleMeterRankChanged?.Invoke(styleMeterRank);
-                    }
+                        if (styleMeter > 0f && !styleMeterAboveZero)
+                        {
+                            styleMeterAboveZero = true;
+                            UltraRGB.QueueUpdate("PlayerStyleMeterRank", styleMeterRankNameList[styleMeterRank]);
+                        }
+                        if (styleMeter <= 0f && styleMeterAboveZero && styleMeterRank == 0)
+                        {
+                            styleMeterAboveZero = false;
+                            UltraRGB.QueueUpdate("PlayerStyleMeterRank", styleMeterRankNameList[styleMeterRank]);
+                        }
                 }
 
                 if (styleMeterRank != styleHUDCache.rankIndex)
                 {
                     styleMeterRank = styleHUDCache.rankIndex;
-                    OnStyleMeterRankChanged?.Invoke(styleMeterRank);
+                    UltraRGB.QueueUpdate("PlayerStyleMeterRank", styleMeterRankNameList[styleMeterRank]);
                 }
             }
 
@@ -151,32 +116,32 @@ public class PlayerCheck : MonoBehaviour
                 if (styleMeterMultiplier != styleCalculatorCache.airTime)
                 {
                     styleMeterMultiplier = styleCalculatorCache.airTime;
-                    OnStyleMeterMultiplierChanged?.Invoke(styleMeterMultiplier);
+                    UltraRGB.QueueUpdate("PlayerStyleMeterMultiplier", Math.Round(styleMeterMultiplier, 2));
                 }
             }
 
             if (sliding != newMovementCache.sliding)
             {
                 sliding = newMovementCache.sliding;
-                OnSlidingChanged?.Invoke(sliding);
+                UltraRGB.QueueUpdate("PlayerSliding", sliding);
             }
 
             if (slaming != newMovementCache.gc.heavyFall)
             {
                 slaming = newMovementCache.gc.heavyFall;
-                OnSlamingChanged?.Invoke(slaming);
+                UltraRGB.QueueUpdate("PlayerSlaming", slaming);
             }
 
             if (slamForce != newMovementCache.slamForce)
             {
                 slamForce = newMovementCache.slamForce;
-                OnSlamForceChanged?.Invoke(slamForce);
+                UltraRGB.QueueUpdate("PlayerSlamForce", slamForce);
             }
 
             if (falling != newMovementCache.falling)
             {
                 falling = newMovementCache.falling;
-                OnFallingChanged?.Invoke(falling);
+                UltraRGB.QueueUpdate("PlayerFalling", falling);
             }
 
             if (hookArmCache != null)
@@ -184,9 +149,10 @@ public class PlayerCheck : MonoBehaviour
                 if (wipLashing != hookArmCache.beingPulled)
                 {
                     wipLashing = hookArmCache.beingPulled;
-                    OnWipLashingChanged?.Invoke(wipLashing);
+                    UltraRGB.QueueUpdate("PlayerWipLashing", wipLashing);
                 }
             }
         }
     }
 }
+

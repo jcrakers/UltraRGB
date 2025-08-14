@@ -3,39 +3,8 @@ using UnityEngine;
 
 namespace UltraRGB.Components;
 
-public class WeaponCheck : MonoBehaviour
+public class WeaponCheck : BaseCheck
 {
-    private static bool initialized;
-    public static void Init()
-    {
-        if (!initialized)
-        {
-            initialized = true;
-            GameObject WeaponGameObject = new("OtherCheck");
-            WeaponCheck GunCheck = WeaponGameObject.AddComponent<WeaponCheck>();
-            WeaponGameObject.hideFlags = HideFlags.HideAndDontSave;
-            GunCheck.enabled = true;
-            DontDestroyOnLoad(WeaponGameObject);
-            //UltraRGB.Logger.LogInfo($"GunCheck Init");
-        }
-    }
-
-    public delegate void GunCheckBoolHandler(bool value);
-    public delegate void GunCheckIntHandler(int value);
-    public delegate void GunCheckFloatHandler(float value);
-    public delegate void GunCheckStringHandler(string value);
-
-
-    public static GunCheckStringHandler OnWeaponChange;
-    public static GunCheckStringHandler OnWeaponVariationChange;
-    public static GunCheckStringHandler OnWeaponFreshnessChange;
-    public static GunCheckFloatHandler OnWeaponFreshnessMeterChange;
-    public static GunCheckStringHandler OnFistChange;
-    public static GunCheckFloatHandler OnFistCooldownChange;
-    public static GunCheckIntHandler OnWeaponSlotChange;
-    public static GunCheckBoolHandler OnAlternateChange;
-
-
     public static string currentWeapon = "";
     public static string currentVariation = "";
     public static string CurrentFist = "";
@@ -53,7 +22,7 @@ public class WeaponCheck : MonoBehaviour
     private StyleHUD styleHUDCache;
 
 
-    private void LateUpdate()
+    protected override void RateLimitedUpdate()
     {
         if (gunControlCache == null || optionsManagerCache == null || newMovementCache == null || fistControlCache == null || weaponChargesCache == null || styleHUDCache == null)
         {
@@ -66,7 +35,12 @@ public class WeaponCheck : MonoBehaviour
             lastWeaponFreshnessMeter = Traverse.Create(styleHUDCache).Field("freshnessSliderValue");
         }
 
-        if (gunControlCache != null && !optionsManagerCache.paused && newMovementCache != null && fistControlCache != null && weaponChargesCache != null && styleHUDCache != null)
+        if (optionsManagerCache.paused)
+        {
+            return;
+        }
+
+        if (gunControlCache == null)
         {
             if (gunControlCache.currentWeapon != null)
             {
@@ -76,73 +50,72 @@ public class WeaponCheck : MonoBehaviour
                     if (currentWeapon.Contains("(Clone)"))
                         currentWeapon = currentWeapon.Replace("(Clone)", "");
 
-                    OnWeaponChange?.Invoke(currentWeapon);
+                    UltraRGB.QueueUpdate("WeaponCurrentWeapon", currentWeapon);
 
                     isAlternate = FindAlternateWeapon();
-                    OnAlternateChange?.Invoke(isAlternate);
+                    UltraRGB.QueueUpdate("WeaponIsAlternate", isAlternate);
 
                     currentVariation = FindWeaponVariation();
-                    OnWeaponVariationChange?.Invoke(currentVariation);
+                    UltraRGB.QueueUpdate("WeaponCurrentVariation", currentVariation);
                 }
             }
-
-            if ((gunControlCache.currentWeapon == null || gunControlCache.currentWeapon.name == null) && currentWeapon != "None")
+            else if (gunControlCache.currentWeapon.name == null && currentWeapon != "None")
             {
                 currentWeapon = "None";
-                OnWeaponChange.Invoke(currentWeapon);
+                UltraRGB.QueueUpdate("WeaponCurrentWeapon", currentWeapon);
             }
 
             if (currentSlot != gunControlCache.currentSlotIndex)
             {
                 currentSlot = gunControlCache.currentSlotIndex;
-                OnWeaponSlotChange?.Invoke(currentSlot);
+                UltraRGB.QueueUpdate("WeaponCurrentSlot", currentSlot);
             }
+        }
 
-            if (fistControlCache != null && fistControlCache.currentArmObject != null)
+        if (fistControlCache != null && fistControlCache.currentArmObject != null)
+        {
+            if (CurrentFist != fistControlCache.currentArmObject.name)
             {
-                if (CurrentFist != fistControlCache.currentArmObject.name)
-                {
-                    CurrentFist = fistControlCache.currentArmObject.name;
-                    if (CurrentFist.Contains("(Clone)"))
+                CurrentFist = fistControlCache.currentArmObject.name;
+                if (CurrentFist.Contains("(Clone)"))
                         CurrentFist = CurrentFist.Replace("(Clone)", "");
 
-                    OnFistChange?.Invoke(CurrentFist);
-                }
-
-                if (fistCooldown != fistControlCache.fistCooldown)
-                {
-                    fistCooldown = fistControlCache.fistCooldown;
-                    OnFistCooldownChange?.Invoke(fistCooldown);
-                }
+                UltraRGB.QueueUpdate("WeaponCurrentFist", CurrentFist);
             }
 
-            if (weaponChargesCache != null)
+            /*if (fistCooldown != fistControlCache.fistCooldown)
             {
-                if (fistCooldown != weaponChargesCache.punchStamina)
-                {
-                    fistCooldown = weaponChargesCache.punchStamina;
-                    OnFistCooldownChange?.Invoke(fistCooldown);
-                }
+                fistCooldown = fistControlCache.fistCooldown;
+                UltraRGB.QueueUpdate("WeaponFistCooldown", fistCooldown);
+            }*/
+        }
+
+        if (weaponChargesCache != null)
+        {
+            if (fistCooldown != weaponChargesCache.punchStamina)
+            {
+                fistCooldown = weaponChargesCache.punchStamina;
+                UltraRGB.QueueUpdate("WeaponFistCooldown", fistCooldown * 50f);
             }
-            else if (CurrentFist != "None")
+        }
+        else if (CurrentFist != "None")
+        {
+            CurrentFist = "None";
+            UltraRGB.QueueUpdate("WeaponCurrentFist", CurrentFist);
+        }
+
+        if (styleHUDCache != null)
+        {
+            if (weaponFreshness != styleHUDCache.GetFreshnessState(gunControlCache.currentWeapon).ToString())
             {
-                CurrentFist = "None";
-                OnFistChange?.Invoke(CurrentFist);
+                weaponFreshness = styleHUDCache.GetFreshnessState(gunControlCache.currentWeapon).ToString();
+                UltraRGB.QueueUpdate("WeaponWeaponFreshness", weaponFreshness);
             }
 
-            if (styleHUDCache != null)
+            if (weaponFreshnessMeter != lastWeaponFreshnessMeter.GetValue<float>())
             {
-                if (weaponFreshness != styleHUDCache.GetFreshnessState(gunControlCache.currentWeapon).ToString())
-                {
-                    weaponFreshness = styleHUDCache.GetFreshnessState(gunControlCache.currentWeapon).ToString();
-                    OnWeaponFreshnessChange?.Invoke(weaponFreshness);
-                }
-
-                if (weaponFreshnessMeter != lastWeaponFreshnessMeter.GetValue<float>())
-                {
-                    weaponFreshnessMeter = lastWeaponFreshnessMeter.GetValue<float>();
-                    OnWeaponFreshnessMeterChange?.Invoke(weaponFreshnessMeter);
-                }
+                weaponFreshnessMeter = lastWeaponFreshnessMeter.GetValue<float>();
+                UltraRGB.QueueUpdate("WeaponWeaponFreshnessMeter", Mathf.InverseLerp(0.5f, 10f, weaponFreshnessMeter) * 150f);
             }
         }
     }
