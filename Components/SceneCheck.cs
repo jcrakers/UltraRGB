@@ -34,6 +34,7 @@ public static class SceneCheck
 
     private static void OnSceneLoad(Scene scene, LoadSceneMode loadSceneMode)
     {
+        UltraRGB.Logger.LogInfo($"OnSceneLoad: {scene.name}");
         if (scene != SceneManager.GetActiveScene())
             return;
 
@@ -43,10 +44,10 @@ public static class SceneCheck
         {
             CurrentLevelType = newScene;
             CurrentSceneName = SceneHelper.CurrentScene;
-            UltraRGB.QueueUpdate("OtherCurrentSceneType", CurrentLevelType);
+            UltraRGB.QueueUpdate("CurrentSceneType", CurrentLevelType.ToString(), "Miscellaneous");
         }
 
-        UltraRGB.QueueUpdate("OtherCurrentSceneName", CurrentSceneName);
+        UltraRGB.QueueUpdate("CurrentSceneName", CurrentSceneName, "Miscellaneous");
 
         var difficulty = PrefsManager.Instance.GetInt("difficulty");
         var difficultyName = difficulty switch
@@ -60,8 +61,8 @@ public static class SceneCheck
             _ => "Unknown"
         };
 
-        UltraRGB.QueueUpdate("OtherDifficulty", difficulty);
-        UltraRGB.QueueUpdate("OtherDifficultyName", difficultyName);
+        UltraRGB.QueueUpdate("Difficulty", difficulty, "Miscellaneous");
+        UltraRGB.QueueUpdate("DifficultyName", difficultyName, "Miscellaneous");
     }
     
     public static LevelType GetLevelType(string sceneName)

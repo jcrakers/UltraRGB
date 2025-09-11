@@ -49,39 +49,39 @@ public class PlayerCheck : BaseCheck
             if (dead != newMovementCache.dead)
             {
                 dead = newMovementCache.dead;
-                UltraRGB.QueueUpdate("PlayerDead", dead);
+                UltraRGB.QueueUpdate("Dead", dead, "Player");
             }
 
             if (health != newMovementCache.hp)
             {
                 health = newMovementCache.hp;
-                UltraRGB.QueueUpdate("PlayerHealth", health);
+                UltraRGB.QueueUpdate("Health", health, "Player");
             }
 
             if (hardDamage != newMovementCache.antiHp)
             {
                 hardDamage = newMovementCache.antiHp;
-                UltraRGB.QueueUpdate("PlayerHardDamage", hardDamage);
+                UltraRGB.QueueUpdate("HardDamage", hardDamage, "Player");
             }
 
             if (stamina != newMovementCache.boostCharge)
             {
                 stamina = newMovementCache.boostCharge;
-                UltraRGB.QueueUpdate("PlayerStamina", stamina);
+                UltraRGB.QueueUpdate("Stamina", stamina, "Player");
             }
 
             if (wallJumps != newMovementCache.currentWallJumps)
             {
                 wallJumps = newMovementCache.currentWallJumps;
-                UltraRGB.QueueUpdate("PlayerWallJumps", (wallJumps - 3) * -1);
+                UltraRGB.QueueUpdate("RemainingWallJumps", (wallJumps - 3) * -1, "Player");
             }
 
             if (playerTrackerCache != null)
             {
-                if (Mathf.Abs(speed - playerTrackerCache.GetPlayerVelocity(true).magnitude) > 0.01f)
+                if (speed != Math.Round(playerTrackerCache.GetPlayerVelocity(true).magnitude, 5))
                 {
-                    speed = playerTrackerCache.GetPlayerVelocity(true).magnitude;
-                    UltraRGB.QueueUpdate("PlayerSpeed", speed);
+                    speed = (float)Math.Round(playerTrackerCache.GetPlayerVelocity(true).magnitude, 5);
+                    UltraRGB.QueueUpdate("Speed", speed, "Player");
                 }
             }
 
@@ -90,24 +90,27 @@ public class PlayerCheck : BaseCheck
                 if (styleMeter != lastStyleMeter.GetValue<float>())
                 {
                     styleMeter = lastStyleMeter.GetValue<float>();
-                    UltraRGB.QueueUpdate("PlayerStyleMeter", Mathf.Clamp(styleMeter, 0, styleHUDCache.currentRank.maxMeter) / styleHUDCache.currentRank.maxMeter * 100f);
+                    UltraRGB.QueueUpdate("StyleMeter", Mathf.Clamp(styleMeter, 0, styleHUDCache.currentRank.maxMeter) / styleHUDCache.currentRank.maxMeter * 100f, "Player");
+
+
+                    if (styleMeterRank != styleHUDCache.rankIndex)
+                    {
+                        styleMeterRank = styleHUDCache.rankIndex;
+
 
                         if (styleMeter > 0f && !styleMeterAboveZero)
                         {
                             styleMeterAboveZero = true;
-                            UltraRGB.QueueUpdate("PlayerStyleMeterRank", styleMeterRankNameList[styleMeterRank]);
+                            UltraRGB.QueueUpdate("StyleMeterRank", styleMeterRank + 1, "Player");
+                            UltraRGB.QueueUpdate("StyleMeterRankName", styleMeterRankNameList[styleMeterRank + 1], "Player");
                         }
                         if (styleMeter <= 0f && styleMeterAboveZero && styleMeterRank == 0)
                         {
                             styleMeterAboveZero = false;
-                            UltraRGB.QueueUpdate("PlayerStyleMeterRank", styleMeterRankNameList[styleMeterRank]);
+                            UltraRGB.QueueUpdate("StyleMeterRank", styleMeterRank, "Player");
+                            UltraRGB.QueueUpdate("StyleMeterRankName", styleMeterRankNameList[styleMeterRank], "Player");
                         }
-                }
-
-                if (styleMeterRank != styleHUDCache.rankIndex)
-                {
-                    styleMeterRank = styleHUDCache.rankIndex;
-                    UltraRGB.QueueUpdate("PlayerStyleMeterRank", styleMeterRankNameList[styleMeterRank]);
+                    }
                 }
             }
 
@@ -116,32 +119,32 @@ public class PlayerCheck : BaseCheck
                 if (styleMeterMultiplier != styleCalculatorCache.airTime)
                 {
                     styleMeterMultiplier = styleCalculatorCache.airTime;
-                    UltraRGB.QueueUpdate("PlayerStyleMeterMultiplier", Math.Round(styleMeterMultiplier, 2));
+                    UltraRGB.QueueUpdate("StyleMultiplier", Math.Round(styleMeterMultiplier, 2), "Player");
                 }
             }
 
             if (sliding != newMovementCache.sliding)
             {
                 sliding = newMovementCache.sliding;
-                UltraRGB.QueueUpdate("PlayerSliding", sliding);
+                UltraRGB.QueueUpdate("Sliding", sliding, "Player");
             }
 
             if (slaming != newMovementCache.gc.heavyFall)
             {
                 slaming = newMovementCache.gc.heavyFall;
-                UltraRGB.QueueUpdate("PlayerSlaming", slaming);
+                UltraRGB.QueueUpdate("Slaming", slaming, "Player");
             }
 
             if (slamForce != newMovementCache.slamForce)
             {
                 slamForce = newMovementCache.slamForce;
-                UltraRGB.QueueUpdate("PlayerSlamForce", slamForce);
+                UltraRGB.QueueUpdate("SlamForce", slamForce, "Player");
             }
 
             if (falling != newMovementCache.falling)
             {
                 falling = newMovementCache.falling;
-                UltraRGB.QueueUpdate("PlayerFalling", falling);
+                UltraRGB.QueueUpdate("Airborne", falling, "Player");
             }
 
             if (hookArmCache != null)
@@ -149,7 +152,7 @@ public class PlayerCheck : BaseCheck
                 if (wipLashing != hookArmCache.beingPulled)
                 {
                     wipLashing = hookArmCache.beingPulled;
-                    UltraRGB.QueueUpdate("PlayerWipLashing", wipLashing);
+                    UltraRGB.QueueUpdate("WipLashing", wipLashing, "Player");
                 }
             }
         }

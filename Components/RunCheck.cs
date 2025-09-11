@@ -1,4 +1,3 @@
-using UnityEngine;
 using System.Collections.Generic;
 
 namespace UltraRGB.Components;
@@ -44,7 +43,7 @@ public class RunCheck : BaseCheck
                 levelCompleted = statsManagerCache.infoSent;
                 if (statsManagerCache.infoSent)
                 {
-                    UltraRGB.QueueUpdate("RunLevelCompleted", statsManagerCache.infoSent);
+                    UltraRGB.QueueUpdate("LevelCompleted", statsManagerCache.infoSent, "Run");
                 }
             }
         }
@@ -54,7 +53,7 @@ public class RunCheck : BaseCheck
             if (challengeDone != challengeManagerCache.challengeDone)
             {
                 challengeDone = challengeManagerCache.challengeDone;
-                UltraRGB.QueueUpdate("RunChallengeCompleted", challengeManagerCache.challengeDone);
+                UltraRGB.QueueUpdate("ChallengeCompleted", challengeManagerCache.challengeDone, "Run");
             }
         }
 
@@ -62,36 +61,36 @@ public class RunCheck : BaseCheck
             if (timeRank != GetRank(0))
             {
                 timeRank = GetRank(0);
-                UltraRGB.QueueUpdate("RunTimeRank", GetRank(0));
+                UltraRGB.QueueUpdate("TimeRank", GetRank(0), "Run");
             }
             if (killRank != GetRank(1))
             {
                 killRank = GetRank(1);
-                UltraRGB.QueueUpdate("RunKillRank", GetRank(1));
+                UltraRGB.QueueUpdate("KillRank", GetRank(1), "Run");
             }
             if (styleRank != GetRank(2))
             {
                 styleRank = GetRank(2);
-                UltraRGB.QueueUpdate("RunStyleRank", GetRank(2));
+                UltraRGB.QueueUpdate("StyleRank", GetRank(2), "Run");
             }
         }
 
-        if (statsManagerCache != null && !optionsManagerCache.paused && !statsManagerCache.endlessMode)
+        if (statsManagerCache != null && !optionsManagerCache.paused && !statsManagerCache.endlessMode && SceneCheck.CurrentLevelType != SceneCheck.LevelType.Sandbox)
         {
             if (time != statsManagerCache.seconds)
             {
                 time = statsManagerCache.seconds;
-                UltraRGB.QueueUpdate("RunTime", statsManagerCache.seconds);
+                UltraRGB.QueueUpdate("Time", statsManagerCache.seconds, "Run");
             }
             if (kills != statsManagerCache.kills)
             {
                 kills = statsManagerCache.kills;
-                UltraRGB.QueueUpdate("RunKills", statsManagerCache.kills);
+                UltraRGB.QueueUpdate("Kills", statsManagerCache.kills, "Run");
             }
             if (style != statsManagerCache.stylePoints)
             {
                 style = statsManagerCache.stylePoints;
-                UltraRGB.QueueUpdate("RunStyle", statsManagerCache.stylePoints);
+                UltraRGB.QueueUpdate("Style", statsManagerCache.stylePoints, "Run");
             }
         }
 
@@ -100,22 +99,22 @@ public class RunCheck : BaseCheck
             if (cgTime != statsManagerCache.seconds)
             {
                 cgTime = statsManagerCache.seconds;
-                UltraRGB.QueueUpdate("CyberGrindTime", statsManagerCache.seconds);
+                UltraRGB.QueueUpdate("Time", statsManagerCache.seconds, "CyberGrind");
             }
             if (cgWave != endlessGridCache.currentWave)
             {
                 cgWave = endlessGridCache.currentWave;
-                UltraRGB.QueueUpdate("CyberGrindWave", endlessGridCache.currentWave);
+                UltraRGB.QueueUpdate("Wave", endlessGridCache.currentWave, "CyberGrind");
             }
             if (cgEnemiesLeft != enemyTrackerCache.GetCurrentEnemies().Count)
             {
                 cgEnemiesLeft = enemyTrackerCache.GetCurrentEnemies().Count;
-                UltraRGB.QueueUpdate("CyberGrindEnemiesLeft", enemyTrackerCache.GetCurrentEnemies().Count);
+                UltraRGB.QueueUpdate("EnemiesLeft", enemyTrackerCache.GetCurrentEnemies().Count, "CyberGrind");
             }
             if (cgMaxEnemies != endlessGridCache.tempEnemyAmount)
             {
                 cgMaxEnemies = endlessGridCache.tempEnemyAmount;
-                UltraRGB.QueueUpdate("CyberGrindMaxEnemies", endlessGridCache.tempEnemyAmount);
+                UltraRGB.QueueUpdate("MaxEnemies", endlessGridCache.tempEnemyAmount, "CyberGrind");
             }
         }
     }

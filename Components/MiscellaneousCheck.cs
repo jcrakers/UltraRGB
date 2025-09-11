@@ -1,8 +1,6 @@
-using UnityEngine;
-
 namespace UltraRGB.Components;
 
-public class OtherCheck : BaseCheck
+public class MiscellaneousCheck : BaseCheck
 {
     private static bool paused = false;
     private static bool cheatsEnabled = false;
@@ -23,7 +21,7 @@ public class OtherCheck : BaseCheck
             if (paused != optionsManagerCache.paused)
             {
                 paused = optionsManagerCache.paused;
-                UltraRGB.QueueUpdate("OtherPaused", paused);
+                UltraRGB.QueueUpdate("IsPaused", paused, "Miscellaneous");
             }
         }
 
@@ -32,7 +30,7 @@ public class OtherCheck : BaseCheck
             if (cheatsEnabled != cheatsControllerCache.cheatsEnabled)
             {
                 cheatsEnabled = cheatsControllerCache.cheatsEnabled;
-                UltraRGB.QueueUpdate("OtherCheatsEnabled", cheatsEnabled);
+                UltraRGB.QueueUpdate("CheatsEnabled", cheatsEnabled, "Miscellaneous");
             }
         }
     }

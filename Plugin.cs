@@ -7,6 +7,8 @@ using System.IO;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System;
+using System.Collections;
 
 namespace UltraRGB;
 
@@ -20,24 +22,73 @@ public class UltraRGB : BaseUnityPlugin
     public static readonly float UpdateRate = 30f;
     public static readonly bool EnableRateLimiting = true;
 
-    private static Dictionary<string, object> pendingUpdates = [];
-    private readonly float batchInterval = 0.0333f;
-    private float lastBatchTime = 0f;
-
-    public static GameObject ultraRGBObject;
-
     private async void PostArtemis(string endPoint, object content)
     {
-        Logger.LogInfo($"Posting {content}");
-        var stringContent = new StringContent(JsonConvert.SerializeObject(content), System.Text.Encoding.UTF8, "application/json");
-        stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        var response = await client.PostAsync(url + endPoint, stringContent);
-
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            var errorContent = await response.Content.ReadAsStringAsync();
-            Logger.LogWarning($"Failed to post {content}: {errorContent}");
+            //Logger.LogInfo("Preparing to post to Artemis...");
+
+            //Logger.LogInfo($"Raw content type: {content?.GetType().FullName ?? "null"}");
+        
+            if (content is Dictionary<string, object> dict)
+            {
+                content = CleanDictionary(dict);
+            }
+
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(content, settings);
+            Logger.LogInfo($"Serialized content:\n{json}");
+
+
+            var stringContent = new StringContent(json, System.Text.Encoding.UTF8, "text/plain");
+            stringContent.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
+
+
+            //Logger.LogInfo($"Sending request to {url + endPoint}");
+            var response = await client.PostAsync(url + endPoint, stringContent);
+
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Logger.LogWarning($"Failed to post to {endPoint}. Status: {response.StatusCode}, Error: {errorContent}");
+            }
+            else
+            {
+                //Logger.LogInfo("Successfully posted to Artemis");
+            }
         }
+        catch (Exception ex)
+        {
+            Logger.LogWarning($"Unexpected error in PostArtemis: {ex}");
+        }
+    }
+
+    private Dictionary<string, object> CleanDictionary(Dictionary<string, object> dict)
+    {
+        var result = new Dictionary<string, object>();
+    
+        foreach (var kvp in dict)
+        {
+            if (kvp.Value is Dictionary<string, object> nestedDict)
+            {
+                var cleaned = CleanDictionary(nestedDict);
+                if (cleaned.Count > 0)
+                {
+                    result[kvp.Key] = cleaned;
+                }
+            }
+            else if (kvp.Value != null)
+            {
+                result[kvp.Key] = kvp.Value;
+            }
+        }
+    
+        return result;
     }
 
     private string GetArtemisPort()
@@ -56,6 +107,8 @@ public class UltraRGB : BaseUnityPlugin
         return $"{port}plugins/A6B0DCB1-2160-4BF0-993F-03B4AC688EB2/";
     }
 
+    public static GameObject ultraRGBObject;
+
     private void Awake()
     {
         // Plugin startup logic
@@ -68,42 +121,110 @@ public class UltraRGB : BaseUnityPlugin
         DontDestroyOnLoad(ultraRGBObject);
 
         url = GetArtemisPort();
+        pendingUpdates = DeepCopy(JsonStructure);
 
         ultraRGBObject.AddComponent<PlayerCheck>();
-        ultraRGBObject.AddComponent<WeaponCheck>();
+        //ultraRGBObject.AddComponent<WeaponCheck>();
         ultraRGBObject.AddComponent<RunCheck>();
-        ultraRGBObject.AddComponent<OtherCheck>();
+        SceneCheck.Init();
+        ultraRGBObject.AddComponent<MiscellaneousCheck>();
+
+        ultraRGBObject.AddComponent<UltraRGBUpdater>().Initialize(this);
 
         StatsManager.checkpointRestart += OnCheckpointRestart;
-
-        Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} initialized");
     }
 
-    private void Update()
+    private static Dictionary<string, object> pendingUpdates;
+    private static bool hasUpdates = false;
+
+    private void LateUpdate()
     {
-        Logger.LogInfo($"Pending updates: ");
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            Logger.LogInfo($"BatchUpdate");
+            Logger.LogInfo(NewMovement.Instance.currentWallJumps);
         }
 
-        if (pendingUpdates.Count > 0 && Time.time - lastBatchTime >= batchInterval)
+        if (hasUpdates)
         {
-            Logger.LogInfo($"Sending batched updates");
-            PostArtemis("UltrakillBundle", pendingUpdates);
-            pendingUpdates.Clear();
-            lastBatchTime = Time.time;
+            //Logger.LogInfo($"Sending batched updates");
+            PostArtemis("ULTRAKILLBundle", pendingUpdates);
+            pendingUpdates = DeepCopy(JsonStructure);
+            hasUpdates = false;
         }
     }
 
-    public static void QueueUpdate(string key, object value)
+    private static readonly List<string> WeaponComponents = ["Revolver", "AlternateRevolver", "ShotGun", "Jackhammer", "NailGun", "SawBladeLauncher", "RocketLauncher"];
+    private static readonly Dictionary<string, object> JsonStructure = new()
     {
-        pendingUpdates[key] = value;
+        ["MiscellaneousData"] = new Dictionary<string, object> {},
+        ["RunData"] = new Dictionary<string, object> {},
+        ["CyberGrindData"] = new Dictionary<string, object> {},
+        ["PlayerData"] = new Dictionary<string, object> {},
+        ["WeaponData"] = new Dictionary<string, object>
+        {
+            ["Revolver"] = new Dictionary<string, object> {},
+            ["AlternateRevolver"] = new Dictionary<string, object> {},
+            ["ShotGun"] = new Dictionary<string, object> {},
+            ["Jackhammer"] = new Dictionary<string, object> {},
+            ["NailGun"] = new Dictionary<string, object> {},
+            ["SawBladeLauncher"] = new Dictionary<string, object> {},
+            ["RocketLauncher"] = new Dictionary<string, object> {},
+        },
+    };
+
+    private static Dictionary<string, object> DeepCopy(Dictionary<string, object> original)
+    {
+        var copy = new Dictionary<string, object>();
+        foreach (var entry in original)
+        {
+            if (entry.Value is Dictionary<string, object>)
+            {
+                copy[entry.Key] = DeepCopy(entry.Value as Dictionary<string, object>);
+            }
+            else
+            {
+                copy[entry.Key] = entry.Value;
+            }
+        }
+        return copy;
+    }
+
+    public static void QueueUpdate(string key, object value, string component)
+    {
+        try
+        {
+            if (WeaponComponents.Contains(component))
+            {
+                //Logger.LogInfo($"QueueUpdate {key} {value} in {component} in Weapon");
+
+                var weaponDict = pendingUpdates["WeaponData"] as Dictionary<string, object>;
+                var componentDict = weaponDict[component] as Dictionary<string, object>;
+                componentDict[key] = value;
+
+
+            }
+            else
+            {
+                //Logger.LogInfo($"QueueUpdate {key} {value} in {component}");
+
+                var componentDict = pendingUpdates[component + "Data"] as Dictionary<string, object>;
+                componentDict[key] = value;
+
+
+            }
+            hasUpdates = true;
+
+
+        }
+        catch (Exception e)
+        {
+            Logger.LogWarning($"Failed to queue update when updating {key} in {component + "Data"}: {e.Message}");
+        }
     }
 
     private void OnCheckpointRestart()
     {
-        QueueUpdate("RunCheckRestarts", StatsManager.Instance.restarts);
+        QueueUpdate("Restarts", StatsManager.Instance.restarts, "Run");
     }
 
     /*private void OnStyleMeterChanged(float styleMeter)
@@ -157,4 +278,19 @@ public class UltraRGB : BaseUnityPlugin
         weaponFreshness *= 150f;
         PostArtemis("WeaponFreshnessMeter", weaponFreshness.ToString());
     }*/
+
+    private class UltraRGBUpdater : MonoBehaviour
+    {
+        private UltraRGB parent;
+
+        public void Initialize(UltraRGB parent)
+        {
+            this.parent = parent;
+        }
+
+        private void LateUpdate()
+        {
+            parent.LateUpdate();
+        }
+    }
 }
