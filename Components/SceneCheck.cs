@@ -34,7 +34,6 @@ public static class SceneCheck
 
     private static void OnSceneLoad(Scene scene, LoadSceneMode loadSceneMode)
     {
-        UltraRGB.Logger.LogInfo($"OnSceneLoad: {scene.name}");
         if (scene != SceneManager.GetActiveScene())
             return;
 

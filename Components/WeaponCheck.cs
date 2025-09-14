@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 using UnityEngine;
 
@@ -6,14 +7,15 @@ namespace UltraRGB.Components;
 public class WeaponCheck : BaseCheck
 {
     public static string currentWeapon = "";
+    private static string previousWeapon = "";
     public static string currentVariation = "";
     public static string CurrentFist = "";
+    private static string previousFist = "";
     public static string weaponFreshness = "";
     public static float weaponFreshnessMeter = 0f; private Traverse lastWeaponFreshnessMeter;
     public static float fistCooldown = 0f;
     public static int currentSlot = 0;
     public static bool isAlternate = false;
-
     private GunControl gunControlCache;
     private OptionsManager optionsManagerCache;
     private NewMovement newMovementCache;
@@ -24,14 +26,40 @@ public class WeaponCheck : BaseCheck
 
     protected override void RateLimitedUpdate()
     {
-        if (gunControlCache == null || optionsManagerCache == null || newMovementCache == null || fistControlCache == null || weaponChargesCache == null || styleHUDCache == null)
+        if (optionsManagerCache == null)
         {
-            gunControlCache = GunControl.Instance;
-            optionsManagerCache = OptionsManager.Instance;
-            newMovementCache = NewMovement.Instance;
+            optionsManagerCache = MonoSingleton<OptionsManager>.Instance;
+            if (optionsManagerCache == null) return;
+        }
+
+        if (gunControlCache == null)
+        {
+            gunControlCache = MonoSingleton<GunControl>.Instance;
+            if (gunControlCache == null) return;
+        }
+
+        if (newMovementCache == null)
+        {
+            newMovementCache = MonoSingleton<NewMovement>.Instance;
+            if (newMovementCache == null) return;
+        }
+
+        if (fistControlCache == null)
+        {
             fistControlCache = FistControl.Instance;
+            if (fistControlCache == null) return;
+        }
+
+        if (weaponChargesCache == null)
+        {
             weaponChargesCache = WeaponCharges.Instance;
+            if (weaponChargesCache == null) return;
+        }
+
+        if (styleHUDCache == null)
+        {
             styleHUDCache = StyleHUD.Instance;
+            if (styleHUDCache == null) return;
             lastWeaponFreshnessMeter = Traverse.Create(styleHUDCache).Field("freshnessSliderValue");
         }
 
@@ -40,7 +68,7 @@ public class WeaponCheck : BaseCheck
             return;
         }
 
-        if (gunControlCache == null)
+        if (gunControlCache != null)
         {
             if (gunControlCache.currentWeapon != null)
             {
@@ -49,14 +77,25 @@ public class WeaponCheck : BaseCheck
                     currentWeapon = gunControlCache.currentWeapon.name;
                     if (currentWeapon.Contains("(Clone)"))
                         currentWeapon = currentWeapon.Replace("(Clone)", "");
+                    
+                    if (currentWeapon != previousWeapon)
+                    {
+                        UltraRGB.QueueUpdate("CurrentWeapon", currentWeapon, "Weapon");
+                        previousWeapon = currentWeapon;
+                    }
 
-                    UltraRGB.QueueUpdate("CurrentWeapon", currentWeapon, "Weapon");
+                    if (isAlternate != FindAlternateWeapon())
+                    {
+                        isAlternate = FindAlternateWeapon();
+                        UltraRGB.QueueUpdate("IsAlternate", isAlternate, "Weapon");
+                    }
 
-                    isAlternate = FindAlternateWeapon();
-                    UltraRGB.QueueUpdate("IsAlternate", isAlternate, "Weapon");
 
-                    currentVariation = FindWeaponVariation();
-                    UltraRGB.QueueUpdate("CurrentVariation", currentVariation, "Weapon");
+                    if (currentVariation != FindWeaponVariation())
+                    {
+                        currentVariation = FindWeaponVariation();
+                        UltraRGB.QueueUpdate("CurrentVariation", currentVariation, "Weapon");
+                    }
                 }
             }
             else if (gunControlCache.currentWeapon.name == null && currentWeapon != "None")
@@ -80,14 +119,12 @@ public class WeaponCheck : BaseCheck
                 if (CurrentFist.Contains("(Clone)"))
                         CurrentFist = CurrentFist.Replace("(Clone)", "");
 
-                UltraRGB.QueueUpdate("CurrentFist", CurrentFist, "Weapon");
+                if (CurrentFist != previousFist)
+                {
+                    UltraRGB.QueueUpdate("CurrentFist", CurrentFist, "Weapon");
+                    previousFist = CurrentFist;
+                }
             }
-
-            /*if (fistCooldown != fistControlCache.fistCooldown)
-            {
-                fistCooldown = fistControlCache.fistCooldown;
-                UltraRGB.QueueUpdate("WeaponFistCooldown", fistCooldown);
-            }*/
         }
 
         if (weaponChargesCache != null)
@@ -118,7 +155,54 @@ public class WeaponCheck : BaseCheck
                 UltraRGB.QueueUpdate("WeaponFreshnessMeter", Mathf.InverseLerp(0.5f, 10f, weaponFreshnessMeter) * 150f, "Weapon");
             }
         }
+
+        if (gunControlCache.currentWeapon.name != null)
+        {
+            RevolverCheck();
+            AlternativeRevolverCheck();
+            ShotGunCheck();
+            HammerCheck();
+            NailGunCheck();
+            SawBladeLauncherCheck();
+            RocketLauncherCheck();
+        }
     }
+
+    private void RevolverCheck()
+    {
+        
+    }
+
+    private void AlternativeRevolverCheck()
+    {
+        
+    }
+
+    private void ShotGunCheck()
+    {
+
+    }
+
+    private void HammerCheck()
+    {
+
+    }
+
+    private void NailGunCheck()
+    {
+
+    }
+
+    private void SawBladeLauncherCheck()
+    {
+        
+    }
+
+    private void RocketLauncherCheck()
+    {
+        
+    }
+
 
     private bool FindAlternateWeapon()
     {
@@ -169,7 +253,7 @@ public class WeaponCheck : BaseCheck
             _ when currentWeapon.Equals("Rocket Launcher Freeze") => "Blue",
             _ when currentWeapon.Equals("Rocket Launcher Cannonball") => "Green",
             _ when currentWeapon.Equals("Rocket Launcher Napalm") => "Red",
-            _ => "None"
+            _ => "Unknown"
         };
     }
 }

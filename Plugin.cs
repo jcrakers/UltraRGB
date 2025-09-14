@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System;
 using System.Collections;
+using HarmonyLib;
 
 namespace UltraRGB;
 
@@ -124,7 +125,7 @@ public class UltraRGB : BaseUnityPlugin
         pendingUpdates = DeepCopy(JsonStructure);
 
         ultraRGBObject.AddComponent<PlayerCheck>();
-        //ultraRGBObject.AddComponent<WeaponCheck>();
+        ultraRGBObject.AddComponent<WeaponCheck>();
         ultraRGBObject.AddComponent<RunCheck>();
         SceneCheck.Init();
         ultraRGBObject.AddComponent<MiscellaneousCheck>();
@@ -141,7 +142,8 @@ public class UltraRGB : BaseUnityPlugin
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            Logger.LogInfo(NewMovement.Instance.currentWallJumps);
+            Logger.LogInfo(EnemyTracker.Instance.GetCurrentEnemies().Count);
+            Logger.LogInfo(EndlessGrid.Instance.tempEnemyAmount);
         }
 
         if (hasUpdates)

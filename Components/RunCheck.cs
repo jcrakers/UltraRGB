@@ -6,6 +6,7 @@ public class RunCheck : BaseCheck
 {
     public static bool levelCompleted = false;
     public static bool challengeDone = false;
+    public static bool noHit = true;
     public static float time = 0f;
     public static float kills = 0f;
     public static float style = 0f;
@@ -15,8 +16,8 @@ public class RunCheck : BaseCheck
 
     public static float cgTime = 0f;
     public static float cgWave = 0f;
-    public static float cgEnemiesLeft = 0f;
-    public static float cgMaxEnemies = 0f;
+    public static int cgEnemiesLeft = 0;
+    public static int cgMaxEnemies = 0;
 
 
     private StatsManager statsManagerCache;
@@ -45,6 +46,11 @@ public class RunCheck : BaseCheck
                 {
                     UltraRGB.QueueUpdate("LevelCompleted", statsManagerCache.infoSent, "Run");
                 }
+            }
+            if (noHit == statsManagerCache.tookDamage)
+            {
+                noHit = !statsManagerCache.tookDamage;
+                UltraRGB.QueueUpdate("NoHit", !statsManagerCache.tookDamage, "Run");
             }
         }
 
@@ -109,11 +115,13 @@ public class RunCheck : BaseCheck
             if (cgEnemiesLeft != enemyTrackerCache.GetCurrentEnemies().Count)
             {
                 cgEnemiesLeft = enemyTrackerCache.GetCurrentEnemies().Count;
+                UltraRGB.Logger.LogInfo($"Enemies Left: {cgEnemiesLeft}");
                 UltraRGB.QueueUpdate("EnemiesLeft", enemyTrackerCache.GetCurrentEnemies().Count, "CyberGrind");
             }
             if (cgMaxEnemies != endlessGridCache.tempEnemyAmount)
             {
                 cgMaxEnemies = endlessGridCache.tempEnemyAmount;
+                UltraRGB.Logger.LogInfo($"Max Enemies: {cgMaxEnemies}");
                 UltraRGB.QueueUpdate("MaxEnemies", endlessGridCache.tempEnemyAmount, "CyberGrind");
             }
         }

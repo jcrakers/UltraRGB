@@ -12,8 +12,8 @@ public class PlayerCheck : BaseCheck
     public static float stamina = 300f;
     public static int wallJumps = 3;
     public static float speed = 0f;
-    public static float styleMeter = 0f; private Traverse lastStyleMeter;
-    public static int styleMeterRank = 0; private bool styleMeterAboveZero = false; private readonly List<string> styleMeterRankNameList = ["None", "Destructive", "Chaotic", "Brutal", "Anarchic", "Supreme", "SSadistic", "SSShitstorm", "ULTRAKILL"];
+    public static float styleMeter = 0f; private bool styleMeterAboveZero = false; private Traverse lastStyleMeter;
+    public static int styleMeterRank = 0; private readonly List<string> styleMeterRankNameList = ["None", "Destructive", "Chaotic", "Brutal", "Anarchic", "Supreme", "SSadistic", "SSShitstorm", "ULTRAKILL"];
     public static float styleMeterMultiplier = 1f;
     public static bool sliding = false;
     public static bool slaming = false;
@@ -87,29 +87,32 @@ public class PlayerCheck : BaseCheck
 
             if (styleHUDCache != null)
             {
+                if (styleMeterRank != styleHUDCache.rankIndex)
+                {
+                    styleMeterRank = styleHUDCache.rankIndex;
+                    UltraRGB.QueueUpdate("StyleMeterRank", styleMeterRank + 1, "Player");
+                    UltraRGB.QueueUpdate("StyleMeterRankName", styleMeterRankNameList[styleMeterRank + 1], "Player");
+                }
+
+
                 if (styleMeter != lastStyleMeter.GetValue<float>())
                 {
                     styleMeter = lastStyleMeter.GetValue<float>();
                     UltraRGB.QueueUpdate("StyleMeter", Mathf.Clamp(styleMeter, 0, styleHUDCache.currentRank.maxMeter) / styleHUDCache.currentRank.maxMeter * 100f, "Player");
 
 
-                    if (styleMeterRank != styleHUDCache.rankIndex)
+                    if (styleMeterRank == 0 && styleMeter <= 0.01f && styleMeterAboveZero)
                     {
-                        styleMeterRank = styleHUDCache.rankIndex;
-
-
-                        if (styleMeter > 0f && !styleMeterAboveZero)
-                        {
-                            styleMeterAboveZero = true;
-                            UltraRGB.QueueUpdate("StyleMeterRank", styleMeterRank + 1, "Player");
-                            UltraRGB.QueueUpdate("StyleMeterRankName", styleMeterRankNameList[styleMeterRank + 1], "Player");
-                        }
-                        if (styleMeter <= 0f && styleMeterAboveZero && styleMeterRank == 0)
-                        {
-                            styleMeterAboveZero = false;
-                            UltraRGB.QueueUpdate("StyleMeterRank", styleMeterRank, "Player");
-                            UltraRGB.QueueUpdate("StyleMeterRankName", styleMeterRankNameList[styleMeterRank], "Player");
-                        }
+                        styleMeterAboveZero = false;
+                        UltraRGB.QueueUpdate("StyleMeterRank", 0, "Player");
+                        UltraRGB.QueueUpdate("StyleMeterRankName", styleMeterRankNameList[0], "Player"); 
+                    }
+                    
+                    if (styleMeterRank == 0 && styleMeter > 0.01f && !styleMeterAboveZero)
+                    {
+                        styleMeterAboveZero = true;
+                        UltraRGB.QueueUpdate("StyleMeterRank", styleMeterRank + 1, "Player");
+                        UltraRGB.QueueUpdate("StyleMeterRankName", styleMeterRankNameList[styleMeterRank + 1], "Player");
                     }
                 }
             }
@@ -122,6 +125,8 @@ public class PlayerCheck : BaseCheck
                     UltraRGB.QueueUpdate("StyleMultiplier", Math.Round(styleMeterMultiplier, 2), "Player");
                 }
             }
+
+            // TODO: Add support for style bonuses
 
             if (sliding != newMovementCache.sliding)
             {
@@ -147,7 +152,7 @@ public class PlayerCheck : BaseCheck
                 UltraRGB.QueueUpdate("Airborne", falling, "Player");
             }
 
-            if (hookArmCache != null)
+            if (hookArmCache != null) // TODO: Redo so this tracks Wiplash state
             {
                 if (wipLashing != hookArmCache.beingPulled)
                 {
